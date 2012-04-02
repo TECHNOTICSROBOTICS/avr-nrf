@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.0">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
@@ -986,10 +986,10 @@ design rules under a new name.</description>
 <element name="R2" library="rcl" package="R0603" value="3.01k" x="36.1696" y="26.6192"/>
 <element name="R16" library="rcl" package="R0603" value="330" x="23.7744" y="21.1328" rot="R90"/>
 <element name="R17" library="rcl" package="R0603" value="330" x="25.1968" y="21.1328" rot="R90"/>
-<element name="C19" library="rcl" package="C0805" value="100u" x="36.3728" y="21.1328" rot="R90"/>
+<element name="C19" library="rcl" package="C0805" value="10u" x="36.3728" y="21.1328" rot="R90"/>
 <element name="R18" library="rcl" package="R0603" value="50" x="31.496" y="21.1328" rot="R90"/>
-<element name="C20" library="rcl" package="C0805" value="10n" x="34.544" y="21.1328" rot="R90"/>
-<element name="C21" library="rcl" package="C0805" value="10n" x="26.8224" y="21.1328" rot="R90"/>
+<element name="C20" library="rcl" package="C0805" value=".1u" x="34.544" y="21.1328" rot="R90"/>
+<element name="C21" library="rcl" package="C0805" value=".1u" x="26.8224" y="21.1328" rot="R90"/>
 <element name="R19" library="rcl" package="R0603" value="50" x="32.9184" y="21.1328" rot="R90"/>
 <element name="R20" library="rcl" package="R0603" value="50" x="28.448" y="21.1328" rot="R90"/>
 <element name="R21" library="rcl" package="R0603" value="50" x="29.8704" y="21.1328" rot="R90"/>

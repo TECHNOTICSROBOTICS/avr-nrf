@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.0">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
@@ -9662,11 +9662,11 @@ Based on TI Design Note DN007</description>
 <part name="R16" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
 <part name="R17" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
 <part name="P+9" library="supply1" deviceset="VCC" device=""/>
-<part name="C19" library="rcl" deviceset="C-EU" device="C0805" value="100u"/>
+<part name="C19" library="rcl" deviceset="C-EU" device="C0805" value="10u"/>
 <part name="GND33" library="supply1" deviceset="GND" device=""/>
 <part name="R18" library="rcl" deviceset="R-EU_" device="R0603" value="50"/>
-<part name="C20" library="rcl" deviceset="C-EU" device="C0805" value="10n"/>
-<part name="C21" library="rcl" deviceset="C-EU" device="C0805" value="10n"/>
+<part name="C20" library="rcl" deviceset="C-EU" device="C0805" value=".1u"/>
+<part name="C21" library="rcl" deviceset="C-EU" device="C0805" value=".1u"/>
 <part name="R19" library="rcl" deviceset="R-EU_" device="R0603" value="50"/>
 <part name="R20" library="rcl" deviceset="R-EU_" device="R0603" value="50"/>
 <part name="R21" library="rcl" deviceset="R-EU_" device="R0603" value="50"/>
