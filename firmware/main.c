@@ -27,6 +27,7 @@
 #include "ep0.h"
 #include "spi.h"
 #include "nrf24l01p.h"
+#include "ksz8851snl.h"
 #include "blink.h"
 
 void hello(void)
@@ -40,10 +41,10 @@ void hello(void)
 		led_b_on();
 
 		_delay_ms(50);
-		
+
 		led_c_off();
 		led_b_off();
-		
+
 		_delay_ms(50);
 	}
 }
@@ -81,6 +82,9 @@ int main(void)
 	sei();
 
 	hello();
+
+	nrf_powerup();
+	nrf_mode_rx();
 
 	while (1) {
 		cli();

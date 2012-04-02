@@ -33,7 +33,7 @@ CFLAGS  = -Os -Iusb -Wall -mmcu=$(MCU) -DF_CPU=$(F_CPU)
 ASFLAGS =
 LDFLAGS =
 
-OBJS = version.o main.o board.o spi.o nrf24l01p.o blink.o descr.o ep0.o \
+OBJS = version.o main.o board.o spi.o nrf24l01p.o ksz8851snl.o blink.o descr.o ep0.o \
        usb/dfu_common.o usb/usb.o usb/atu2.o
 
 # ----- Verbosity control -----------------------------------------------------

@@ -25,6 +25,7 @@
 
 #include "defines.h"
 #include "nrf24l01p.h"
+#include "ksz8851snl.h"
 
 #define debug(...)
 #define error(...)
@@ -48,7 +49,7 @@ static void do_buf_write(void *user)
 static int my_setup(const struct setup_request *setup)
 {
 	uint16_t req = setup->bmRequestType | setup->bRequest << 8;
-	unsigned tmp;
+	uint16_t tmp;
 	uint8_t i;
 
 	switch (req) {
@@ -102,12 +103,14 @@ static int my_setup(const struct setup_request *setup)
 		return 1;
 
 	case ATUSB_TO_DEV(ATUSB_ETH_WRITE):
-		/* TODO: eth write */
+		ksz8851_write_reg(setup->wIndex & 0xff, setup->wValue);
 		return 1;
 
 	case ATUSB_FROM_DEV(ATUSB_ETH_READ):
-		/* TODO: eth read */
-		usb_send(&eps[0], buf, 1, NULL, NULL);
+		tmp = ksz8851_read_reg(setup->wIndex & 0xff);
+		buf[0] = tmp & 0xff;
+		buf[1] = tmp >> 8;
+		usb_send(&eps[0], buf, 2, NULL, NULL);
 		return 1;
 
 	case ATUSB_TO_DEV(ATUSB_SPI_WRITE1):
