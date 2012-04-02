@@ -21,7 +21,7 @@
 #define ADDR_AW AW_3_BYTES
 static uint8_t broadcast[] = { 0x10, 0xab, 0x0f };
 
-#define CHANNEL 77
+#define CHANNEL 33
 #define PAYLOADSZ 16
 
 #define NRF_CONFIG (MASK_RX_DR | MASK_TX_DS | MASK_MAX_RT | \
@@ -214,6 +214,7 @@ void nrf_irq(void)
 	/* RX data ready */
 	if (status & RX_DR) {
 		blink_rx();
+		nrf_flush_rx();
 	}
 
 	/* TX data sent */
@@ -234,10 +235,6 @@ void nrf_irq(void)
 
 void nrf_init(void)
 {
-	NRF_DDR |= _BV(NRF_CS) | _BV(NRF_CE);
-	nrf_cs_h();
-	nrf_ce_l();
-
 	/* set TX addr and addr size */
 	nrf_write_reg(SETUP_AW, ADDR_AW);
 	nrf_write_addr(TX_ADDR, broadcast, sizeof(broadcast));

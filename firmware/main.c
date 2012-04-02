@@ -59,11 +59,15 @@ int main(void)
 
 	led_a_on();
 
-	nrf_init();
-	
-	/* TODO; move to ksz8851.c */
+	/* IO init */
+	NRF_DDR |= _BV(NRF_CS) | _BV(NRF_CE);
 	ETH_DDR |= _BV(ETH_CS);
+	nrf_cs_h();
+	nrf_ce_l();
 	eth_cs_h();
+
+	nrf_init();
+	ksz8851_init();
 
 	usb_init();
 	ep0_init();
