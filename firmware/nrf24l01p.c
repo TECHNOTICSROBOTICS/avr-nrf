@@ -31,7 +31,7 @@ static uint8_t broadcast[] = { 0x10, 0xab, 0x0f };
  * Commands
  */
 
-static uint8_t nrf_read_reg(uint8_t addr)
+uint8_t nrf_read_reg(uint8_t addr)
 {
 	uint8_t ret;
 
@@ -45,7 +45,7 @@ static uint8_t nrf_read_reg(uint8_t addr)
 	return ret;
 }
 
-static void nrf_write_reg(uint8_t addr, uint8_t data)
+void nrf_write_reg(uint8_t addr, uint8_t data)
 {
 	nrf_cs_l();
 

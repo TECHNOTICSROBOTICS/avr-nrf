@@ -24,6 +24,7 @@
 #include "spi.h"
 
 #include "defines.h"
+#include "nrf24l01p.h"
 
 #define debug(...)
 #define error(...)
@@ -91,14 +92,21 @@ static int my_setup(const struct setup_request *setup)
 		usb_send(&eps[0], buf, 3, NULL, NULL);
 		return 1;
 
-	case ATUSB_TO_DEV(ATUSB_REG_WRITE):
-		debug("ATUSB_REG_WRITE\n");
-		/* TODO: reg write */
+	case ATUSB_TO_DEV(ATUSB_NRF_WRITE):
+		nrf_write_reg(setup->wIndex & 0xff, setup->wValue & 0xff);
 		return 1;
 
-	case ATUSB_FROM_DEV(ATUSB_REG_READ):
-		debug("ATUSB_REG_READ\n");
-		/* TODO: reg write */
+	case ATUSB_FROM_DEV(ATUSB_NRF_READ):
+		buf[0] = nrf_read_reg(setup->wIndex & 0xff);
+		usb_send(&eps[0], buf, 1, NULL, NULL);
+		return 1;
+
+	case ATUSB_TO_DEV(ATUSB_ETH_WRITE):
+		/* TODO: eth write */
+		return 1;
+
+	case ATUSB_FROM_DEV(ATUSB_ETH_READ):
+		/* TODO: eth read */
 		usb_send(&eps[0], buf, 1, NULL, NULL);
 		return 1;
 

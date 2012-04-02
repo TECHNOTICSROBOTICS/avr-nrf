@@ -114,3 +114,6 @@ uint8_t nrf_rx(uint8_t *data, uint8_t size);
 void nrf_tx(uint8_t *data, uint8_t size);
 void nrf_irq(void);
 void nrf_init(void);
+
+uint8_t nrf_read_reg(uint8_t addr);
+void nrf_write_reg(uint8_t addr, uint8_t data);

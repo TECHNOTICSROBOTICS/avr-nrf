@@ -58,11 +58,15 @@ enum control_requests {
 
 /* transceiver group
  *
- * host->	ATUSB_REG_WRITE		value		addr	0
- * ->host	ATUSB_REG_READ		-		addr	1
+ * host->	ATUSB_NRF_WRITE		value		addr	0
+ * ->host	ATUSB_NRF_READ		-		addr	1
+ * host->	ATUSB_ETH_WRITE		value		addr	0
+ * ->host	ATUSB_ETH_READ		-		addr	2
  */
-	ATUSB_REG_WRITE			= 0x20,
-	ATUSB_REG_READ,
+	ATUSB_NRF_WRITE			= 0x20,
+	ATUSB_NRF_READ,
+	ATUSB_ETH_WRITE,
+	ATUSB_ETH_READ,
 
 /* SPI group
  *
