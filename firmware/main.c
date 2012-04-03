@@ -91,6 +91,10 @@ int main(void)
 		nrf_irq();
 		sei();
 
+		cli();
+		ksz8851_irq();
+		sei();
+
 		//sleep_mode();
 	}
 }

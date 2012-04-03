@@ -300,4 +300,5 @@
 void ksz8851_write_reg(uint8_t reg, uint16_t val);
 uint16_t ksz8851_read_reg(uint8_t reg);
 void ksz8851_send_packet(uint8_t *buf, uint16_t length);
+void ksz8851_irq(void);
 void ksz8851_init(void);

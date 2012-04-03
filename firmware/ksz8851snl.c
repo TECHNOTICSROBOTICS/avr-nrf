@@ -127,6 +127,36 @@ void ksz8851_send_packet(uint8_t *buf, uint16_t length)
 	ksz8851_write_reg(KS_TXQCR, TXQCR_METFE);
 }
 
+void ksz8851_irq(void)
+{
+	uint16_t isr;
+
+	isr = ksz8851_read_reg(KS_ISR);
+
+	if (isr & IRQ_LCI)
+		;
+
+	if (isr & IRQ_LDI)
+		;
+
+	if (isr & IRQ_RXPSI)
+		;
+
+	if (isr & IRQ_TXI)
+		blink_tx();
+
+	if (isr & IRQ_RXI)
+		blink_rx();
+
+	if (isr & IRQ_SPIBEI)
+		;
+
+	ksz8851_write_reg(KS_ISR, isr);
+
+	if (isr & IRQ_RXI)
+		;
+}
+
 void ksz8851_init(void)
 {
 	fid = 0;
