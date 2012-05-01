@@ -144,6 +144,8 @@ static uint8_t nrf_get_status(void)
 
 void nrf_powerup(void)
 {
+	nrf_ce_l();
+
 	nrf_write_reg(CONFIG, NRF_CONFIG | PWR_UP);
 
 	_delay_ms(5);
