@@ -55,6 +55,7 @@ int main(void)
 	led_init();
 	spi_init();
 	blink_init();
+	chg_init();
 
 	_delay_ms(10);
 

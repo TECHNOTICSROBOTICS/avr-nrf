@@ -26,10 +26,19 @@
 
 #define led_a_on()     LED_A_PORT |=  _BV(LED_A)
 #define led_a_off()    LED_A_PORT &= ~_BV(LED_A)
+#define led_a_toggle() LED_A_PORT ^=  _BV(LED_A)
 #define led_b_on()     LED_B_PORT |=  _BV(LED_B)
 #define led_b_off()    LED_B_PORT &= ~_BV(LED_B)
 #define led_c_on()     LED_C_PORT |=  _BV(LED_C)
 #define led_c_off()    LED_C_PORT &= ~_BV(LED_C)
+
+/* Charger */
+#define CHG_PORT        PORTC
+#define CHG_PIN         PINC
+#define CHG             PC7
+
+#define chg_init() CHG_PORT |= _BV(CHG)
+#define chg_read() (!(CHG_PIN & _BV(CHG)))
 
 /* SPI */
 #define SPI_DDR  DDRB
