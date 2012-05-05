@@ -635,7 +635,7 @@ Source: http://www.osram.convergy.de/ ... LG_R971.pdf</description>
 </library>
 <library name="antenna">
 <packages>
-<package name="DN007">
+<package name="DN007+5">
 <wire x1="-8.6" y1="-3.3" x2="16.9" y2="-3.3" width="0.127" layer="21" style="shortdash"/>
 <wire x1="16.94" y1="3.61" x2="16.94" y2="1.4" width="0.25" layer="21"/>
 <wire x1="17.94" y1="3.61" x2="17.94" y2="2.4" width="0.25" layer="21"/>
@@ -977,7 +977,7 @@ design rules under a new name.</description>
 <element name="TP4" library="testpad" package="TP08SQ" value="TPTP08SQ" x="11.3538" y="40.6908" rot="R90">
 <attribute name="TP_SIGNAL_NAME" value="" x="11.3538" y="40.6908" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="U$1" library="antenna" package="DN007" value="INVERTED_F_ANTENNA" x="9.144" y="44.9072"/>
+<element name="U$1" library="antenna" package="DN007+5" value="INVERTED_F_ANTENNA+5" x="9.144" y="44.9072"/>
 <element name="U4" library="balto" package="MLF32-TH" value="KSZ8851SNL" x="30.48" y="28.0416"/>
 <element name="J1" library="micrel" package="PJ-J0" value="J0026" x="30.48" y="7.7216" rot="R180"/>
 <element name="Y3" library="SparkFun" package="CRYSTAL-SMD-5X3" value="25M" x="36.7792" y="30.8864" rot="R90"/>
