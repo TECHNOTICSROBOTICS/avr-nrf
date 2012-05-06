@@ -48,6 +48,11 @@ ISR(TIMER0_COMPA_vect)
 	led_timeout_c--;
 	if (led_timeout_c == 0)
 		led_c_off();
+
+	if (button_read() && power_down < 0xff)
+		power_down++;
+	else
+		power_down = 0;
 }
 
 void blink_tx(void)

@@ -1,3 +1,7 @@
+#include <stdint.h>
+
+extern volatile uint8_t power_down;
+
 /* buttons */
 #define BUTTON_PORT PORTD
 #define BUTTON_DDR  DDRD

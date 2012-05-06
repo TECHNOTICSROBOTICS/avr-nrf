@@ -30,6 +30,8 @@
 #include "ksz8851snl.h"
 #include "blink.h"
 
+volatile uint8_t power_down;
+
 void hello(void)
 {
 	uint8_t i;
@@ -70,6 +72,8 @@ int main(void)
 	spi_init();
 	blink_init();
 	chg_init();
+
+	power_down = 0;
 
 	_delay_ms(10);
 
