@@ -8,20 +8,20 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -30,8 +30,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -39,16 +39,16 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="93" name="Pins" color="2" fill="1" visible="no" active="yes"/>
@@ -9954,6 +9954,7 @@ Based on TI Design Note DN007&lt;br&gt;</description>
 <attributes>
 </attributes>
 <variantdefs>
+<variantdef name="no-eth"/>
 </variantdefs>
 <classes>
 <class number="0" name="default" width="0" drill="0">
@@ -10044,36 +10045,78 @@ Based on TI Design Note DN007&lt;br&gt;</description>
 <part name="TP4" library="testpad" deviceset="TP" device="TP08SQ"/>
 <part name="U$1" library="antenna" deviceset="INVERTED_F_ANTENNA" device="+5"/>
 <part name="GND29" library="supply1" deviceset="GND" device=""/>
-<part name="U4" library="balto" deviceset="KSZ8851SNL" device=""/>
-<part name="J1" library="micrel" deviceset="J0026" device=""/>
-<part name="Y3" library="SparkFun" deviceset="CRYSTAL" device="5X3" value="25M"/>
-<part name="C17" library="rcl" deviceset="C-EU" device="C0805" value="22p"/>
-<part name="C18" library="rcl" deviceset="C-EU" device="C0805" value="22p"/>
+<part name="U4" library="balto" deviceset="KSZ8851SNL" device="">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="J1" library="micrel" deviceset="J0026" device="">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="Y3" library="SparkFun" deviceset="CRYSTAL" device="5X3" value="25M">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C17" library="rcl" deviceset="C-EU" device="C0805" value="22p">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C18" library="rcl" deviceset="C-EU" device="C0805" value="22p">
+<variant name="no-eth" populate="no"/>
+</part>
 <part name="GND17" library="supply1" deviceset="GND" device=""/>
 <part name="GND24" library="supply1" deviceset="GND" device=""/>
 <part name="P+8" library="supply1" deviceset="VCC" device=""/>
-<part name="R2" library="rcl" deviceset="R-EU_" device="R0603" value="3.01k"/>
+<part name="R2" library="rcl" deviceset="R-EU_" device="R0603" value="3.01k">
+<variant name="no-eth" populate="no"/>
+</part>
 <part name="GND30" library="supply1" deviceset="GND" device=""/>
 <part name="GND32" library="supply1" deviceset="GND" device=""/>
-<part name="R16" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
-<part name="R17" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
+<part name="R16" library="rcl" deviceset="R-EU_" device="R0603" value="330">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="R17" library="rcl" deviceset="R-EU_" device="R0603" value="330">
+<variant name="no-eth" populate="no"/>
+</part>
 <part name="P+9" library="supply1" deviceset="VCC" device=""/>
-<part name="C19" library="rcl" deviceset="C-EU" device="C0805" value="10u"/>
+<part name="C19" library="rcl" deviceset="C-EU" device="C0805" value="10u">
+<variant name="no-eth" populate="no"/>
+</part>
 <part name="GND33" library="supply1" deviceset="GND" device=""/>
-<part name="R18" library="rcl" deviceset="R-EU_" device="R0603" value="50"/>
-<part name="C20" library="rcl" deviceset="C-EU" device="C0805" value=".1u"/>
-<part name="C21" library="rcl" deviceset="C-EU" device="C0805" value=".1u"/>
-<part name="R19" library="rcl" deviceset="R-EU_" device="R0603" value="50"/>
-<part name="R20" library="rcl" deviceset="R-EU_" device="R0603" value="50"/>
-<part name="R21" library="rcl" deviceset="R-EU_" device="R0603" value="50"/>
+<part name="R18" library="rcl" deviceset="R-EU_" device="R0603" value="50">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C20" library="rcl" deviceset="C-EU" device="C0805" value=".1u">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C21" library="rcl" deviceset="C-EU" device="C0805" value=".1u">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="R19" library="rcl" deviceset="R-EU_" device="R0603" value="50">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="R20" library="rcl" deviceset="R-EU_" device="R0603" value="50">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="R21" library="rcl" deviceset="R-EU_" device="R0603" value="50">
+<variant name="no-eth" populate="no"/>
+</part>
 <part name="GND34" library="supply1" deviceset="GND" device=""/>
 <part name="GND35" library="supply1" deviceset="GND" device=""/>
-<part name="C22" library="rcl" deviceset="C-EU" device="C0805" value="100u"/>
-<part name="C23" library="rcl" deviceset="C-EU" device="C0805" value="100u"/>
-<part name="C24" library="rcl" deviceset="C-EU" device="C0805" value="100u"/>
-<part name="C25" library="rcl" deviceset="C-EU" device="C0805" value="100u"/>
-<part name="C26" library="rcl" deviceset="C-EU" device="C0805" value="100u"/>
-<part name="C27" library="rcl" deviceset="C-EU" device="C0805" value="100u"/>
+<part name="C22" library="rcl" deviceset="C-EU" device="C0805" value="100u">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C23" library="rcl" deviceset="C-EU" device="C0805" value="100u">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C24" library="rcl" deviceset="C-EU" device="C0805" value="100u">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C25" library="rcl" deviceset="C-EU" device="C0805" value="100u">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C26" library="rcl" deviceset="C-EU" device="C0805" value="100u">
+<variant name="no-eth" populate="no"/>
+</part>
+<part name="C27" library="rcl" deviceset="C-EU" device="C0805" value="100u">
+<variant name="no-eth" populate="no"/>
+</part>
 <part name="GND36" library="supply1" deviceset="GND" device=""/>
 <part name="GND37" library="supply1" deviceset="GND" device=""/>
 <part name="P+10" library="supply1" deviceset="VCC" device=""/>
