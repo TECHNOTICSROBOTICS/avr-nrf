@@ -66,3 +66,29 @@
 
 #define eth_cs_h() (ETH_PORT |=  _BV(ETH_CS))
 #define eth_cs_l() (ETH_PORT &= ~_BV(ETH_CS))
+
+/* Interrupts */
+#define BUTTON_EICR	EICRA
+#define BUTTON_ISC	((0 << ISC01) | (1 << ISC00))
+#define BUTTON_INT	INT0
+
+#define CHG_INT		INT4
+#define CHG_EICR	EICRB
+#define CHG_ISC		((0 << ISC41) | (1 << ISC40))
+
+#define ETH_INT		INT6
+#define ETH_EICR	EICRB
+#define ETH_ISC		((1 << ISC61) | (0 << ISC60))
+
+#define NRF_INT		INT7
+#define NRF_EICR	EICRB
+#define NRF_ISC		((1 << ISC71) | (0 << ISC70))
+
+#define irq_init() do {					  \
+		BUTTON_EICR |= BUTTON_ISC;		  \
+		CHG_EICR |= CHG_ISC;			  \
+		ETH_EICR |= ETH_ISC;			  \
+		NRF_EICR |= NRF_ISC;			  \
+		EIMSK |= _BV(BUTTON_INT) | _BV(CHG_INT) | \
+			_BV(ETH_INT) | _BV(NRF_INT);	  \
+	} while (0)

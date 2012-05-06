@@ -24,8 +24,7 @@ static uint8_t broadcast[] = { 0x10, 0xab, 0x0f };
 #define CHANNEL 33
 #define PAYLOADSZ 16
 
-#define NRF_CONFIG (MASK_RX_DR | MASK_TX_DS | MASK_MAX_RT | \
-		EN_CRC | CRCO)
+#define NRF_CONFIG (EN_CRC | CRCO)
 
 /*
  * Commands

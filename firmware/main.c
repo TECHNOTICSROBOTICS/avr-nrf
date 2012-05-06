@@ -49,6 +49,20 @@ void hello(void)
 	}
 }
 
+ISR(INT0_vect)
+{
+}
+ISR(INT4_vect)
+{
+}
+ISR(INT6_vect)
+{
+}
+ISR(INT7_vect)
+{
+	nrf_irq();
+}
+
 int main(void)
 {
 	board_init();
@@ -79,6 +93,8 @@ int main(void)
 	/* move interrupt vectors to 0 */
 	MCUCR = 1 << IVCE;
 	MCUCR = 0;
+
+	irq_init();
 
 	sei();
 
