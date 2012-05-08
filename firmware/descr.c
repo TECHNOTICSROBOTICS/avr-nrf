@@ -111,7 +111,7 @@ static const uint8_t string_descriptor_product[] = {
 };
 
 static const uint8_t string_descriptor_vendor[] = {
-	20 * 2 + 2,			/* blength */
+	21 * 2 + 2,			/* blength */
 	USB_DT_STRING,			/* bDescriptorType */
 	'w', '\0',
 	'w', '\0',
@@ -128,6 +128,7 @@ static const uint8_t string_descriptor_vendor[] = {
 	't', '\0',
 	'i', '\0',
 	'e', '\0',
+	'r', '\0',
 	'i', '\0',
 	'.', '\0',
 	'c', '\0',
