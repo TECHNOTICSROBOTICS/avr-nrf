@@ -52,12 +52,15 @@ void hello(void)
 ISR(INT0_vect)
 {
 }
+
 ISR(INT4_vect)
 {
 }
+
 ISR(INT6_vect)
 {
 }
+
 ISR(INT7_vect)
 {
 	nrf_irq();
