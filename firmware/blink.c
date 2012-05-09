@@ -13,6 +13,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "suspend.h"
+
 static uint8_t led_timeout_b;
 static uint8_t led_timeout_c;
 
@@ -25,27 +27,37 @@ void blink_init(void)
 		   (1 << CS02) | (0 << CS01) | (1 << CS00) ); /* /1024 */
 
 	OCR0A = F_CPU / 1024 / 66; /* about 66Hz */
+
+	suspend_enable(SLEEP_TIMER0);
 }
 
 ISR(TIMER0_COMPA_vect)
 {
-	led_timeout_b--;
-	if (led_timeout_b == 0)
+	if (led_timeout_b)
+		led_timeout_b--;
+	else
 		led_b_off();
 
-	led_timeout_c--;
-	if (led_timeout_c == 0)
+	if (led_timeout_c)
+		led_timeout_c--;
+	else
 		led_c_off();
+
+	if (led_timeout_b == 0 &&
+	    led_timeout_c == 0)
+		suspend_enable(SLEEP_TIMER0);
 }
 
 void blink_tx(void)
 {
 	led_c_on();
 	led_timeout_c = 2;
+	suspend_disable(SLEEP_TIMER0);
 }
 
 void blink_rx(void)
 {
 	led_b_on();
 	led_timeout_b = 2;
+	suspend_disable(SLEEP_TIMER0);
 }

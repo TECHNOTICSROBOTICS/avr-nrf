@@ -30,6 +30,7 @@
 #include "nrf24l01p.h"
 #include "ksz8851snl.h"
 #include "blink.h"
+#include "suspend.h"
 
 void hello(void)
 {
