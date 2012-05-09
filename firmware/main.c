@@ -104,14 +104,20 @@ int main(void)
 	nrf_mode_rx();
 
 	while (1) {
+#if 0
 		cli();
-		nrf_irq();
+		if (nrf_read_reg(RPD))
+			blink_rx();
 		sei();
+#endif
 
+#if 0
 		cli();
 		ksz8851_irq();
 		sei();
+#endif
 
-		//sleep_mode();
+		set_sleep_mode(SLEEP_MODE_IDLE);
+		sleep_mode();
 	}
 }
