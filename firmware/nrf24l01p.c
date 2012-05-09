@@ -21,7 +21,7 @@
 #define ADDR_AW AW_3_BYTES
 static uint8_t broadcast[] = { 0x10, 0xab, 0x0f };
 
-#define CHANNEL 33
+#define CHANNEL 24
 #define PAYLOADSZ 16
 
 #define NRF_CONFIG (EN_CRC | CRCO)
