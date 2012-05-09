@@ -13,7 +13,8 @@
 NAME = main
 
 MCU = atmega32u2
-F_CPU = 16000000UL
+F_CPU = 8000000UL
+XTAL  = 16000000UL
 
 LFUSE = 0xd0
 HFUSE = 0xd9
@@ -29,7 +30,7 @@ AVRDUDEFLAGS = -cusbasp -p$(MCU)
 DFU_UTIL = dfu-util
 DFU_UTIL_FLAGS = -R
 
-CFLAGS  = -Os -Iusb -Wall -mmcu=$(MCU) -DF_CPU=$(F_CPU)
+CFLAGS  = -Os -Iusb -Wall -mmcu=$(MCU) -DF_CPU=$(F_CPU) -DXTAL=$(XTAL)
 ASFLAGS =
 LDFLAGS =
 

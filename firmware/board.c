@@ -88,8 +88,14 @@ void board_init(void)
 	WDTCSR |= 1 << WDCE;	/* Enable change */
 	WDTCSR = 1 << WDCE;	/* Disable watchdog while still enabling change */
 
+#if (F_CPU == 16000000UL)
 	/* We start with a 1 MHz/8 clock. Disable the prescaler. */
-
 	CLKPR = 1 << CLKPCE;
 	CLKPR = 0;
+#elif (F_CPU == 8000000UL)
+	CLKPR = 1 << CLKPCE;
+	CLKPR = 1;
+#else
+#error unsupported F_CPU value
+#endif
 }

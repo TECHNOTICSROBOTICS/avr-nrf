@@ -261,14 +261,14 @@ void usb_init(void)
 	USBCON |= 1 << FRZCLK;		/* freeze the clock */
 
 	/* enable the PLL and wait for it to lock */
-#if (F_CPU == 16000000UL)
+#if (XTAL == 16000000UL)
 	PLLCSR = ( (0 << PLLP2 | 0 << PLLP1) | (1 << PLLP0) |
 		   1 << PLLE );
-#elif (F_CPU == 8000000UL)
+#elif (XTAL == 8000000UL)
 	PLLCSR = ( (0 << PLLP2 | 0 << PLLP1) | (0 << PLLP0) |
 		   1 << PLLE );
 #else
-#error unsupported F_CPU value
+#error unsupported XTAL value
 #endif
 
 	while (!(PLLCSR & (1 << PLOCK)));
