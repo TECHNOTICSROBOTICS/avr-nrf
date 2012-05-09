@@ -16,6 +16,7 @@
 #include <string.h>
 #include <avr/io.h>
 #include <avr/sleep.h>
+#include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
@@ -66,6 +67,14 @@ ISR(INT7_vect)
 	nrf_irq();
 }
 
+ISR(WDT_vect)
+{
+	if (chg_read())
+		led_a_toggle();
+	else
+		led_a_on();
+}
+
 int main(void)
 {
 	board_init();
@@ -97,11 +106,14 @@ int main(void)
 	MCUCR = 1 << IVCE;
 	MCUCR = 0;
 
+        WDTCSR |= (1 << WDE) | (1 << WDCE);
+	WDTCSR = (0 << WDCE) | (1 << WDIF) | (1 << WDIE) |
+		 (1 << WDP2) | (0 << WDP1) | (0 << WDP0);
+
 	irq_init();
 
-	sei();
-
 	hello();
+	sei();
 
 	nrf_powerup();
 	nrf_mode_rx();

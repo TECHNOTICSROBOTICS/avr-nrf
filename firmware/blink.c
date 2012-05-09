@@ -13,7 +13,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-static uint8_t led_timeout_a;
 static uint8_t led_timeout_b;
 static uint8_t led_timeout_c;
 
@@ -26,21 +25,10 @@ void blink_init(void)
 		   (1 << CS02) | (0 << CS01) | (1 << CS00) ); /* /1024 */
 
 	OCR0A = F_CPU / 1024 / 66; /* about 66Hz */
-
-	led_timeout_a = 0;
 }
 
 ISR(TIMER0_COMPA_vect)
 {
-	if (chg_read()) {
-		if (led_timeout_a++ > 20) {
-			led_a_toggle();
-			led_timeout_a = 0;
-		}
-	} else {
-		led_a_on();
-	}
-
 	led_timeout_b--;
 	if (led_timeout_b == 0)
 		led_b_off();
