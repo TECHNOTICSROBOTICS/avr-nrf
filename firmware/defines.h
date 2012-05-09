@@ -44,6 +44,19 @@ extern volatile uint8_t power_down;
 #define chg_init() CHG_PORT |= _BV(CHG)
 #define chg_read() (!(CHG_PIN & _BV(CHG)))
 
+/* Battery thresholds */
+#define THA_PIN	PINC
+#define THA	PC2
+#define THB_PIN	PIND
+#define THB	PD5
+#define THC_PIN	PIND
+#define THC	PD4
+
+#define tha_read() (THA_PIN & _BV(THA))
+#define thb_read() (THB_PIN & _BV(THB))
+#define thc_read() (THC_PIN & _BV(THC))
+#define th_read()  ((!!tha_read() << 0) | (!!thb_read() << 1) | (!!thc_read() << 2))
+
 /* SPI */
 #define SPI_DDR  DDRB
 #define SPI_PORT PORTB
