@@ -15,6 +15,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/boot.h>
+#include <avr/wdt.h>
 #include <util/delay.h>
 
 #include "defines.h"
@@ -35,7 +36,10 @@ void panic(void)
 
 void reset_cpu(void)
 {
-	WDTCSR = 1 << WDE;
+
+	wdt_enable(WDTO_15MS);
+	for (;;)
+		;
 }
 
 int gpio(uint8_t port, uint8_t data, uint8_t dir, uint8_t mask, uint8_t *res)
