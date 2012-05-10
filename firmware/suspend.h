@@ -6,4 +6,5 @@ enum {
 
 void suspend_enable(uint8_t id);
 void suspend_disable(uint8_t id);
+uint8_t suspend_check(uint8_t id);
 uint8_t can_suspend(void);

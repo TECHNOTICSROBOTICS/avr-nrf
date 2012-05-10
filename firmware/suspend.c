@@ -2,7 +2,7 @@
 
 #include "suspend.h"
 
-static uint8_t suspend_mask = 0x00;
+static volatile uint8_t suspend_mask = 0x00;
 
 void suspend_enable(uint8_t id)
 {
@@ -12,6 +12,11 @@ void suspend_enable(uint8_t id)
 void suspend_disable(uint8_t id)
 {
 	suspend_mask |= (1 << id);
+}
+
+uint8_t suspend_check(uint8_t id)
+{
+	return !!(suspend_mask & (1 << id));
 }
 
 uint8_t can_suspend(void)
