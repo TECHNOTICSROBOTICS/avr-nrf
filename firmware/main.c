@@ -72,6 +72,8 @@ ISR(WDT_vect)
 {
 	if (chg_read())
 		led_a_toggle();
+	else if (!suspend_check(SLEEP_USB))
+		blink_status();
 	else
 		led_a_on();
 }
