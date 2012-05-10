@@ -15,8 +15,9 @@
 
 #include "suspend.h"
 
-static uint8_t led_timeout_b;
-static uint8_t led_timeout_c;
+static volatile uint8_t led_timeout_a;
+static volatile uint8_t led_timeout_b;
+static volatile uint8_t led_timeout_c;
 
 void blink_init(void)
 {
@@ -28,24 +29,33 @@ void blink_init(void)
 
 	OCR0A = F_CPU / 1024 / 66; /* about 66Hz */
 
+	led_timeout_a = 0;
+	led_timeout_b = 0;
+	led_timeout_c = 0;
 	suspend_enable(SLEEP_TIMER0);
 }
 
 ISR(TIMER0_COMPA_vect)
 {
+	if (led_timeout_a)
+		if (!--led_timeout_a)
+			led_a_off();
 	if (led_timeout_b)
-		led_timeout_b--;
-	else
-		led_b_off();
-
+		if (!--led_timeout_b)
+			led_b_off();
 	if (led_timeout_c)
-		led_timeout_c--;
-	else
-		led_c_off();
+		if (!--led_timeout_c)
+			led_c_off();
 
-	if (led_timeout_b == 0 &&
-	    led_timeout_c == 0)
+	if (!led_timeout_a && !led_timeout_b && !led_timeout_c )
 		suspend_enable(SLEEP_TIMER0);
+}
+
+void blink_status(void)
+{
+	led_a_on();
+	led_timeout_a = 1;
+	suspend_disable(SLEEP_TIMER0);
 }
 
 void blink_tx(void)
