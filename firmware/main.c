@@ -53,6 +53,10 @@ void hello(void)
 
 ISR(INT0_vect)
 {
+	if (button_read())
+		suspend_disable(SLEEP_USER);
+	else
+		suspend_enable(SLEEP_USER);
 }
 
 ISR(INT4_vect)
