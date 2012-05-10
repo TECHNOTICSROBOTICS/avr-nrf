@@ -1,5 +1,7 @@
 enum {
-	SLEEP_TIMER0
+	SLEEP_USER,
+	SLEEP_TIMER0,
+	SLEEP_USB,
 };
 
 void suspend_enable(uint8_t id);

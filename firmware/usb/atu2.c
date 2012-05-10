@@ -29,6 +29,7 @@
 #include "usb.h"
 #include "../board.h"
 #include "../defines.h"
+#include "../suspend.h"
 
 #if 1
 #define BUG_ON(cond)    do { if (cond) panic(); } while (0)
@@ -235,6 +236,26 @@ ISR(USB_GEN_vect)
 		ep_init();
 		UDINT = ~(1 << EORSTI);
 	}
+	if (flags & (1 << WAKEUPI)) {
+		suspend_disable(SLEEP_USB);
+
+		USBCON &= ~(1 << FRZCLK);
+
+		UDIEN |= 1 << SUSPE;
+		UDIEN &= ~(1 << WAKEUPE);
+
+		UDINT = ~(1 << WAKEUPI);
+	}
+	if (flags & (1 << SUSPI)) {
+		suspend_enable(SLEEP_USB);
+
+		USBCON |= 1 << FRZCLK;
+
+		UDIEN |= 1 << WAKEUPE;
+		UDIEN &= ~(1 << SUSPE);
+
+		UDINT = ~(1 << SUSPI);
+	}
 }
 
 
@@ -279,8 +300,14 @@ void usb_init(void)
 	USBCON &= ~(1 << FRZCLK);	/* thaw the clock */
 
 	UDCON &= ~(1 << DETACH);	/* attach the pull-up */
-	UDIEN = 1 << EORSTE;		/* enable device interrupts  */
+
+	UDIEN = (1 << EORSTE) |		/* enable device interrupts  */
+		(1 << WAKEUPE);
+
 //	UDCON |= 1 << RSTCPU;		/* reset CPU on bus reset */
 
 	ep_init();
+
+	USBCON |= 1 << FRZCLK;		/* start with clock frozen */
+	suspend_enable(SLEEP_USB);
 }
