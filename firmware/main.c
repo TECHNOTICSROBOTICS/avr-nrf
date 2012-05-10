@@ -133,7 +133,10 @@ int main(void)
 		sei();
 #endif
 
-		set_sleep_mode(SLEEP_MODE_IDLE);
+		if (can_suspend())
+			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		else
+			set_sleep_mode(SLEEP_MODE_IDLE);
 		sleep_mode();
 	}
 }
