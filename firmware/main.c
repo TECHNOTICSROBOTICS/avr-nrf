@@ -33,17 +33,19 @@
 #include "suspend.h"
 #include "fifo.h"
 
-static uint8_t inbuf[EP1_SIZE];
-static uint8_t outbuf[EP2_SIZE];
+static uint8_t inbuf[PAYLOAD_SIZE];
+static uint8_t outbuf[PAYLOAD_SIZE];
 
 static void debug_tx(char *msg)
 {
 	static uint8_t idx;
 
 	if (!fifo_full(&rf_tx_fifo)) {
-		memset(outbuf, '\0', 16);
-		snprintf((char *)outbuf, 16, "%02x,%02x %s", get_board_id(), idx++, msg);
-		memcpy(fifo_get_head(&rf_tx_fifo), outbuf, 16);
+		memset(outbuf, '\0', sizeof(outbuf));
+		snprintf((char *)outbuf, sizeof(outbuf),
+				"%02x,%02x %s",
+				get_board_id(), idx++, msg);
+		memcpy(fifo_get_head(&rf_tx_fifo), outbuf, PAYLOAD_SIZE);
 		fifo_push(&rf_tx_fifo);
 	}
 
@@ -108,7 +110,7 @@ ISR(WDT_vect)
 static void usb_in(void *user)
 {
 	if (!fifo_full(&rf_tx_fifo)) {
-		memcpy(fifo_get_head(&rf_tx_fifo), (uint8_t *)user, 16);
+		memcpy(fifo_get_head(&rf_tx_fifo), (uint8_t *)user, PAYLOAD_SIZE);
 		fifo_push(&rf_tx_fifo);
 	}
 
@@ -173,8 +175,8 @@ int main(void)
 
 		cli();
 		if (fifo_count(&rf_rx_fifo) && eps[2].state == EP_IDLE) {
-			memcpy(outbuf, fifo_get_tail(&rf_rx_fifo), 16);
-			usb_send(&eps[2], outbuf, 16,
+			memcpy(outbuf, fifo_get_tail(&rf_rx_fifo), PAYLOAD_SIZE);
+			usb_send(&eps[2], outbuf, PAYLOAD_SIZE,
 				 NULL, NULL);
 			fifo_pop(&rf_rx_fifo);
 		}
@@ -182,7 +184,7 @@ int main(void)
 
 		cli();
 		if (eps[1].state == EP_IDLE)
-			usb_recv(&eps[1], inbuf, 16, usb_in, inbuf);
+			usb_recv(&eps[1], inbuf, PAYLOAD_SIZE, usb_in, inbuf);
 		sei();
 
 		cli();
