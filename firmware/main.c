@@ -31,6 +31,10 @@
 #include "ksz8851snl.h"
 #include "blink.h"
 #include "suspend.h"
+#include "fifo.h"
+
+static uint8_t inbuf[EP1_SIZE];
+static uint8_t outbuf[EP2_SIZE];
 
 void hello(void)
 {
@@ -84,6 +88,11 @@ ISR(WDT_vect)
 	} else {
 		led_a_on();
 	}
+}
+
+static void usb_in(void *user)
+{
+	blink_rx();
 }
 
 int main(void)
@@ -142,6 +151,16 @@ int main(void)
 		ksz8851_irq();
 		sei();
 #endif
+
+		if (fifo_count(&rf_rx_fifo) && eps[2].state == EP_IDLE) {
+			memcpy(outbuf, fifo_get_tail(&rf_rx_fifo), 16);
+			usb_send(&eps[2], outbuf, 16,
+				 NULL, NULL);
+			fifo_pop(&rf_rx_fifo);
+		}
+
+		if (eps[1].state == EP_IDLE)
+			usb_recv(&eps[1], inbuf, 16, usb_in, inbuf);
 
 		if (can_suspend())
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
