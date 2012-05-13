@@ -95,8 +95,8 @@
 
 /* NOTE: keep EP config syncronized with ep_init() in atu2.c */
 #define	NUM_EPS		3
-#define	EP0_SIZE	64
-#define	EP1_SIZE	32
+#define	EP0_SIZE	8
+#define	EP1_SIZE	64
 #define	EP2_SIZE	64
 
 

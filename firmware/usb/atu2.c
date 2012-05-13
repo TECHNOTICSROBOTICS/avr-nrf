@@ -184,7 +184,7 @@ static void ep_init(void)
 	UENUM = 0;
 	UECONX = (1 << RSTDT) | (1 << EPEN);	/* enable */
 	UECFG0X = 0;	/* control, direction is ignored */
-	UECFG1X = 3 << EPSIZE0;	/* 64 bytes */
+	UECFG1X = 0 << EPSIZE0;	/* 8 bytes */
 	UECFG1X |= 1 << ALLOC;
 
 	while (!(UESTA0X & (1 << CFGOK)));
@@ -199,7 +199,7 @@ static void ep_init(void)
 	UENUM = 1;
 	UECONX = (1 << RSTDT) | (1 << EPEN);	/* enable */
 	UECFG0X = (1 << EPTYPE1) | (0 << EPDIR); /* bulk OUT */
-	UECFG1X = 2 << EPSIZE0;	/* 32 bytes */
+	UECFG1X = 3 << EPSIZE0;	/* 64 bytes */
 	UECFG1X |= 1 << ALLOC;
 
 	while (!(UESTA0X & (1 << CFGOK)));
