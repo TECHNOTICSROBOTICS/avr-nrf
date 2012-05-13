@@ -36,6 +36,20 @@
 static uint8_t inbuf[EP1_SIZE];
 static uint8_t outbuf[EP2_SIZE];
 
+static void debug_tx(char *msg)
+{
+	static uint8_t idx;
+
+	if (!fifo_full(&rf_tx_fifo)) {
+		memset(outbuf, '\0', 16);
+		snprintf((char *)outbuf, 16, "%s: %02x", msg, idx++);
+		memcpy(fifo_get_head(&rf_tx_fifo), outbuf, 16);
+		fifo_push(&rf_tx_fifo);
+	}
+
+	nrf_wake_queue();
+}
+
 void hello(void)
 {
 	uint8_t i;
