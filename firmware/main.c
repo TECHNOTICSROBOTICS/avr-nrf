@@ -42,7 +42,7 @@ static void debug_tx(char *msg)
 
 	if (!fifo_full(&rf_tx_fifo)) {
 		memset(outbuf, '\0', 16);
-		snprintf((char *)outbuf, 16, "%s: %02x", msg, idx++);
+		snprintf((char *)outbuf, 16, "%02x,%02x %s", get_board_id(), idx++, msg);
 		memcpy(fifo_get_head(&rf_tx_fifo), outbuf, 16);
 		fifo_push(&rf_tx_fifo);
 	}
