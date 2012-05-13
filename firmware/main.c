@@ -50,7 +50,7 @@ static void debug_tx(char *msg)
 	nrf_wake_queue();
 }
 
-void hello(void)
+static void hello(void)
 {
 	uint8_t i;
 
