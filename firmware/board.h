@@ -15,4 +15,7 @@ void panic(void);
 void reset_cpu(void);
 int gpio(uint8_t port, uint8_t data, uint8_t dir, uint8_t mask, uint8_t *res);
 
+uint8_t get_board_id(void);
+void set_board_id(uint8_t id);
+
 void board_init(void);

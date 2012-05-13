@@ -79,6 +79,14 @@ enum control_requests {
 	ATUSB_SPI_WRITE2,
 	ATUSB_SPI_READ1,
 	ATUSB_SPI_READ2,
+
+/* Application group
+ *
+ * ->host	ATUSB_GET_ID		-		-	1
+ * host->	ATUSB_SET_ID		value		-	0
+ */
+	ATUSB_GET_ID			= 0x40,
+	ATUSB_SET_ID,
 };
 
 void ep0_init(void);

@@ -16,6 +16,7 @@
 #include <avr/interrupt.h>
 #include <avr/boot.h>
 #include <avr/wdt.h>
+#include <avr/eeprom.h>
 #include <util/delay.h>
 
 #include "defines.h"
@@ -84,6 +85,20 @@ int gpio(uint8_t port, uint8_t data, uint8_t dir, uint8_t mask, uint8_t *res)
 	return 1;
 }
 
+static uint8_t EEMEM ee_board_id;
+static uint8_t board_id;
+
+uint8_t get_board_id(void)
+{
+	return board_id;
+}
+
+void set_board_id(uint8_t id)
+{
+	eeprom_write_byte(&ee_board_id, id);
+	board_id = id;
+}
+
 void board_init(void)
 {
 	/* Disable the watchdog timer */
@@ -102,4 +117,6 @@ void board_init(void)
 #else
 #error unsupported F_CPU value
 #endif
+
+	board_id = eeprom_read_byte(&ee_board_id);
 }

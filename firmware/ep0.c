@@ -150,6 +150,17 @@ static int my_setup(const struct setup_request *setup)
 		usb_send(&eps[0], buf, setup->wLength, NULL, NULL);
 		return 1;
 
+	case ATUSB_FROM_DEV(ATUSB_GET_ID):
+		if (setup->wLength != 1)
+			return 0;
+		buf[0] = get_board_id();
+		usb_send(&eps[0], buf, setup->wLength, NULL, NULL);
+		return 1;
+
+	case ATUSB_TO_DEV(ATUSB_SET_ID):
+		set_board_id(setup->wValue & 0xff);
+		return 1;
+
 	default:
 		error("Unrecognized SETUP: 0x%02x 0x%02x ...\n",
 		    setup->bmRequestType, setup->bRequest);
