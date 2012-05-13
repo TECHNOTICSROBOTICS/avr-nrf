@@ -19,5 +19,6 @@ uint8_t *fifo_get_head(struct fifo *fifo);
 void fifo_push(struct fifo *fifo);
 uint8_t *fifo_get_tail(struct fifo *fifo);
 void fifo_pop(struct fifo *fifo);
+uint8_t fifo_full(struct fifo *fifo);
 uint8_t fifo_count(struct fifo *fifo);
 void fifo_clear(struct fifo *fifo);

@@ -43,6 +43,11 @@ void fifo_pop(struct fifo *fifo)
 	fifo->count--;
 }
 
+uint8_t fifo_full(struct fifo *fifo)
+{
+	return (fifo->count >= FIFO_SIZE);
+}
+
 uint8_t fifo_count(struct fifo *fifo)
 {
 	return fifo->count;

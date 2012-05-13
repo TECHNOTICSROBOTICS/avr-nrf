@@ -211,7 +211,6 @@ void nrf_tx(uint8_t *data, uint8_t size)
 void nrf_irq(void)
 {
 	uint8_t status;
-	uint8_t *buf;
 
 	status = nrf_get_status();
 
@@ -219,9 +218,8 @@ void nrf_irq(void)
 	if (status & RX_DR) {
 		blink_rx();
 
-		buf = fifo_get_head(&rf_rx_fifo);
-		if (buf) {
-			if (nrf_rx(buf, PAYLOADSZ))
+		if (!fifo_full(&rf_rx_fifo)) {
+			if (nrf_rx(fifo_get_head(&rf_rx_fifo), PAYLOADSZ))
 				fifo_push(&rf_rx_fifo);
 		} else {
 			nrf_flush_rx();
