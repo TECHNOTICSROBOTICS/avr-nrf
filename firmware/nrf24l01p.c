@@ -27,7 +27,9 @@ static uint8_t broadcast[] = { 0x10, 0xab, 0x0f };
 
 #define NRF_CONFIG (EN_CRC | CRCO)
 
-static volatile uint8_t tx_running;
+#define STATE_TX_ON 0x01
+#define STATE_RX_ON 0x02
+static volatile uint8_t state;
 
 /*
  * Commands
@@ -213,14 +215,33 @@ void nrf_wake_queue(void)
 	if (!fifo_count(&rf_tx_fifo))
 		return;
 
-	if (tx_running)
+	if (state & STATE_TX_ON)
 		return;
 
 	nrf_standby();
 	nrf_tx(fifo_get_tail(&rf_tx_fifo), PAYLOADSZ);
 	fifo_pop(&rf_tx_fifo);
 
-	tx_running = 1;
+	state |= STATE_TX_ON;
+}
+
+void nrf_rx_enable(void)
+{
+	if (!(state & (STATE_TX_ON | STATE_RX_ON))) {
+		nrf_standby();
+		nrf_rx_mode();
+	}
+	state |= STATE_RX_ON;
+}
+
+void nrf_rx_disable(void)
+{
+	if (!(state & STATE_TX_ON)) {
+		nrf_powerdown();
+	}
+	if (state & STATE_RX_ON)
+		fifo_clear(&rf_rx_fifo);
+	state &= ~STATE_RX_ON;
 }
 
 void nrf_irq(void)
@@ -250,9 +271,12 @@ void nrf_irq(void)
 					  PAYLOADSZ);
 			fifo_pop(&rf_tx_fifo);
 		} else {
-			tx_running = 0;
+			state &= ~STATE_TX_ON;
 			nrf_standby();
-			nrf_rx_mode();
+			if (state & STATE_RX_ON)
+				nrf_rx_mode();
+			else
+				nrf_powerdown();
 		}
 	}
 
@@ -269,7 +293,7 @@ void nrf_irq(void)
 
 void nrf_init(void)
 {
-	tx_running = 0;
+	state = 0;
 
 	/* set TX addr and addr size */
 	nrf_write_reg(SETUP_AW, ADDR_AW);

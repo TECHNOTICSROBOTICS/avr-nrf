@@ -156,7 +156,6 @@ int main(void)
 	sei();
 
 	nrf_standby();
-	nrf_rx_mode();
 
 	while (1) {
 #if 0
@@ -184,6 +183,13 @@ int main(void)
 		cli();
 		if (eps[1].state == EP_IDLE)
 			usb_recv(&eps[1], inbuf, 16, usb_in, inbuf);
+		sei();
+
+		cli();
+		if (suspend_check(SLEEP_USB))
+			nrf_rx_enable();
+		else
+			nrf_rx_disable();
 		sei();
 
 		if (can_suspend())

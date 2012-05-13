@@ -116,5 +116,8 @@ void nrf_wake_queue(void);
 void nrf_irq(void);
 void nrf_init(void);
 
+void nrf_rx_enable(void);
+void nrf_rx_disable(void);
+
 uint8_t nrf_read_reg(uint8_t addr);
 void nrf_write_reg(uint8_t addr, uint8_t data);
