@@ -152,12 +152,14 @@ int main(void)
 		sei();
 #endif
 
+		cli();
 		if (fifo_count(&rf_rx_fifo) && eps[2].state == EP_IDLE) {
 			memcpy(outbuf, fifo_get_tail(&rf_rx_fifo), 16);
 			usb_send(&eps[2], outbuf, 16,
 				 NULL, NULL);
 			fifo_pop(&rf_rx_fifo);
 		}
+		sei();
 
 		if (eps[1].state == EP_IDLE)
 			usb_recv(&eps[1], inbuf, 16, usb_in, inbuf);
