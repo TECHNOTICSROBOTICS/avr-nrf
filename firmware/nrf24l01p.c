@@ -27,6 +27,8 @@ static uint8_t broadcast[] = { 0x10, 0xab, 0x0f };
 
 #define NRF_CONFIG (EN_CRC | CRCO)
 
+static volatile uint8_t tx_running;
+
 /*
  * Commands
  */
@@ -204,8 +206,18 @@ void nrf_tx(uint8_t *data, uint8_t size)
 
 	/* pulse ce to start transmit */
 	nrf_ce_h();
-	_delay_us(10);
-	nrf_ce_l();
+}
+
+void nrf_wake_queue(void)
+{
+	if (tx_running)
+		return;
+
+	nrf_standby();
+	nrf_tx(fifo_get_tail(&rf_tx_fifo), PAYLOADSZ);
+	fifo_pop(&rf_tx_fifo);
+
+	tx_running = 1;
 }
 
 void nrf_irq(void)
@@ -229,6 +241,16 @@ void nrf_irq(void)
 	/* TX data sent */
 	if (status & TX_DS) {
 		blink_tx();
+
+		if (fifo_count(&rf_tx_fifo)) {
+			nrf_write_payload(fifo_get_tail(&rf_tx_fifo),
+					  PAYLOADSZ);
+			fifo_pop(&rf_tx_fifo);
+		} else {
+			tx_running = 0;
+			nrf_standby();
+			nrf_rx_mode();
+		}
 	}
 
 	/* TX max retry */
@@ -244,6 +266,8 @@ void nrf_irq(void)
 
 void nrf_init(void)
 {
+	tx_running = 0;
+
 	/* set TX addr and addr size */
 	nrf_write_reg(SETUP_AW, ADDR_AW);
 	nrf_write_addr(TX_ADDR, broadcast, sizeof(broadcast));

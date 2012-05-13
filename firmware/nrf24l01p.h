@@ -112,6 +112,7 @@ void nrf_rx_mode(void);
 uint8_t nrf_has_data(void);
 uint8_t nrf_rx(uint8_t *data, uint8_t size);
 void nrf_tx(uint8_t *data, uint8_t size);
+void nrf_wake_queue(void);
 void nrf_irq(void);
 void nrf_init(void);
 

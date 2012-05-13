@@ -92,7 +92,12 @@ ISR(WDT_vect)
 
 static void usb_in(void *user)
 {
-	blink_rx();
+	if (!fifo_full(&rf_tx_fifo)) {
+		memcpy(fifo_get_head(&rf_tx_fifo), (uint8_t *)user, 16);
+		fifo_push(&rf_tx_fifo);
+	}
+
+	nrf_wake_queue();
 }
 
 int main(void)
@@ -161,8 +166,10 @@ int main(void)
 		}
 		sei();
 
+		cli();
 		if (eps[1].state == EP_IDLE)
 			usb_recv(&eps[1], inbuf, 16, usb_in, inbuf);
+		sei();
 
 		if (can_suspend())
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
