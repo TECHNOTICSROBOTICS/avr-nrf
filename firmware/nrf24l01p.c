@@ -202,7 +202,7 @@ void nrf_tx(uint8_t *data, uint8_t size)
 
 	/* pulse ce to start transmit */
 	nrf_ce_h();
-	_delay_ms(2);
+	_delay_us(10);
 	nrf_ce_l();
 }
 
