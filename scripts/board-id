@@ -1,0 +1,9 @@
+#!/bin/sh
+
+VENDOR="www.fabiobaltieri.com"
+PRODUCT="avr-nrf"
+
+usbtool -V $VENDOR -P $PRODUCT control in vendor device 0x40 0 0 -n1
+if [ "$1" != "" ]; then
+	echo usbtool -V $VENDOR -P $PRODUCT control out vendor device 0x41 0x$1 0
+fi
