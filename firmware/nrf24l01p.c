@@ -141,7 +141,7 @@ static uint8_t nrf_get_status(void)
  * Normal functions
  */
 
-void nrf_powerup(void)
+void nrf_standby(void)
 {
 	nrf_ce_l();
 
@@ -150,14 +150,14 @@ void nrf_powerup(void)
 	_delay_ms(5);
 }
 
-void nrf_mode_rx(void)
+void nrf_rx_mode(void)
 {
 	nrf_write_reg(CONFIG, NRF_CONFIG | PWR_UP | PRIM_RX);
 
 	nrf_ce_h();
 }
 
-void nrf_mode_standby(void)
+void nrf_powerdown(void)
 {
 	nrf_ce_l();
 

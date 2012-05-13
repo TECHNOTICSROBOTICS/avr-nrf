@@ -106,9 +106,9 @@
 #define     EN_DYN_ACK      0x01
 
 /* function definitions */
-void nrf_powerup(void);
-void nrf_mode_rx(void);
-void nrf_mode_standby(void);
+void nrf_powerdown(void);
+void nrf_standby(void);
+void nrf_rx_mode(void);
 uint8_t nrf_has_data(void);
 uint8_t nrf_rx(uint8_t *data, uint8_t size);
 void nrf_tx(uint8_t *data, uint8_t size);

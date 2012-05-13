@@ -126,8 +126,8 @@ int main(void)
 	hello();
 	sei();
 
-	nrf_powerup();
-	nrf_mode_rx();
+	nrf_standby();
+	nrf_rx_mode();
 
 	while (1) {
 #if 0
