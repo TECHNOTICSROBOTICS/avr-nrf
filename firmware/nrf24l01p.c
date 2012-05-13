@@ -210,6 +210,9 @@ void nrf_tx(uint8_t *data, uint8_t size)
 
 void nrf_wake_queue(void)
 {
+	if (!fifo_count(&rf_tx_fifo))
+		return;
+
 	if (tx_running)
 		return;
 
