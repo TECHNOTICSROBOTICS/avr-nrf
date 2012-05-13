@@ -1,5 +1,5 @@
 #define PAYLOAD_SIZE	16
-#define FIFO_SIZE	8
+#define FIFO_SIZE	4
 
 struct entry {
 	uint8_t data[PAYLOAD_SIZE];
