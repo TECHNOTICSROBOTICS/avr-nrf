@@ -16,6 +16,7 @@
 
 #include "spi.h"
 #include "blink.h"
+#include "fifo.h"
 #include "nrf24l01p.h"
 
 #define ADDR_AW AW_3_BYTES
@@ -186,12 +187,13 @@ uint8_t nrf_rx(uint8_t *data, uint8_t size)
 
 	rx_size = nrf_read_reg(RX_PW_P0 + pipe);
 
-	if (rx_size == size)
+	if (rx_size == size) {
 		nrf_read_payload(data, rx_size);
-	else
+		return rx_size;
+	} else {
 		nrf_flush_rx();
-
-	return rx_size;
+		return 0;
+	}
 }
 
 void nrf_tx(uint8_t *data, uint8_t size)
@@ -209,13 +211,21 @@ void nrf_tx(uint8_t *data, uint8_t size)
 void nrf_irq(void)
 {
 	uint8_t status;
+	uint8_t *buf;
 
 	status = nrf_get_status();
 
 	/* RX data ready */
 	if (status & RX_DR) {
 		blink_rx();
-		nrf_flush_rx();
+
+		buf = fifo_get_head(&rf_rx_fifo);
+		if (buf) {
+			if (nrf_rx(buf, PAYLOADSZ))
+				fifo_push(&rf_rx_fifo);
+		} else {
+			nrf_flush_rx();
+		}
 	}
 
 	/* TX data sent */
