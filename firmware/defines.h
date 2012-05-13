@@ -95,7 +95,7 @@
 
 #define NRF_INT		INT7
 #define NRF_EICR	EICRB
-#define NRF_ISC		((1 << ISC71) | (0 << ISC70))
+#define NRF_ISC		((0 << ISC71) | (0 << ISC70))
 
 #define irq_init() do {					  \
 		BUTTON_EICR |= BUTTON_ISC;		  \
