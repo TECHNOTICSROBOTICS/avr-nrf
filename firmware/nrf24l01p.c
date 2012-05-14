@@ -236,7 +236,7 @@ void nrf_rx_enable(void)
 
 void nrf_rx_disable(void)
 {
-	if (!(state & STATE_TX_ON)) {
+	if (!(state & STATE_TX_ON) && (state & STATE_RX_ON)) {
 		nrf_powerdown();
 	}
 	if (state & STATE_RX_ON)
