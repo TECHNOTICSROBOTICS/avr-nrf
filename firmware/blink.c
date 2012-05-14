@@ -27,7 +27,7 @@ void blink_init(void)
 	TCCR0B = ( (0 << WGM02) |
 		   (1 << CS02) | (0 << CS01) | (1 << CS00) ); /* /1024 */
 
-	OCR0A = F_CPU / 1024 / 66; /* about 66Hz */
+	OCR0A = F_CPU / 1024 / 200; /* about 200Hz */
 
 	led_timeout_a = 0;
 	led_timeout_b = 0;
@@ -54,7 +54,7 @@ ISR(TIMER0_COMPA_vect)
 void blink_status(void)
 {
 	led_a_on();
-	led_timeout_a = 1;
+	led_timeout_a = 2;
 	suspend_disable(SLEEP_TIMER0);
 }
 
