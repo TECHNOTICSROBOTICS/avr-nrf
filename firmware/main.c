@@ -94,14 +94,12 @@ ISR(INT7_vect)
 
 ISR(WDT_vect)
 {
-	static uint8_t state;
+	debug_tx("wdt");
 
 	if (chg_read()) {
 		led_a_toggle();
 	} else if (!suspend_check(SLEEP_USB)) {
-		if (state)
-			blink_status();
-		state = !state;
+		blink_status();
 	} else {
 		led_a_on();
 	}
