@@ -55,7 +55,7 @@ static int config_port(int fd)
 
 #define printable(x) (x > ' ' && x < '~' ? x : '.')
 
-static void dump_generic(struct nrf_packet *pkt)
+static void dump_generic(struct nrf_frame *pkt)
 {
 	char *bytes;
 
@@ -94,7 +94,7 @@ static void dump_generic(struct nrf_packet *pkt)
 	       printable(bytes[11]) );
 }
 
-static void decode(struct nrf_packet *pkt)
+static void decode(struct nrf_frame *pkt)
 {
 	printf("board_id=%02x, msg_id=%02x, seq=%02x, flags=%02x: ",
 	       pkt->board_id,
@@ -114,7 +114,7 @@ static void decode(struct nrf_packet *pkt)
 int main(int argc, char **argv)
 {
 	int fd;
-	struct nrf_packet pkt;
+	struct nrf_frame pkt;
 	int ret;
 
 	if (argc != 2) {
