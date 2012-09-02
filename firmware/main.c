@@ -33,18 +33,28 @@
 #include "suspend.h"
 #include "fifo.h"
 
+#include "../decode/nrf_frames.h"
+
 static uint8_t inbuf[PAYLOAD_SIZE];
 static uint8_t outbuf[PAYLOAD_SIZE];
 
 static void debug_tx(char *msg)
 {
-	static uint8_t idx;
+	static uint8_t seq;
+	struct nrf_frame *pkt;
 
 	if (!fifo_full(&rf_tx_fifo)) {
 		memset(outbuf, '\0', sizeof(outbuf));
-		snprintf((char *)outbuf, sizeof(outbuf),
-				"%02x,%02x %s",
-				get_board_id(), idx++, msg);
+
+		pkt = (struct nrf_frame *)outbuf;
+		pkt->board_id = get_board_id();
+		pkt->seq = seq++;
+		pkt->flags = 0;
+
+		snprintf((char *)pkt->msg.generic, sizeof(pkt->msg.generic),
+				"%02x %s",
+				seq, msg);
+
 		memcpy(fifo_get_head(&rf_tx_fifo), outbuf, PAYLOAD_SIZE);
 		fifo_push(&rf_tx_fifo);
 	}
