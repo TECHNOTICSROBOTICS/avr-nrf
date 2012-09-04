@@ -55,6 +55,19 @@ static int config_port(int fd)
 
 #define printable(x) (x > ' ' && x < '~' ? x : '.')
 
+static void dump_power(struct nrf_frame *pkt)
+{
+	struct nrf_power *pwr = &pkt->msg.power;
+
+	printf("power: "
+	       "value=%4d,%4d,%4d,%4d vbatt=%4d",
+	       pwr->value[0],
+	       pwr->value[1],
+	       pwr->value[2],
+	       pwr->value[3],
+	       pwr->vbatt);
+}
+
 static void dump_generic(struct nrf_frame *pkt)
 {
 	char *bytes;
@@ -91,7 +104,7 @@ static void dump_generic(struct nrf_frame *pkt)
 	       printable(bytes[8]),
 	       printable(bytes[9]),
 	       printable(bytes[10]),
-	       printable(bytes[11]) );
+	       printable(bytes[11]));
 }
 
 static void decode(struct nrf_frame *pkt)
@@ -103,6 +116,9 @@ static void decode(struct nrf_frame *pkt)
 	       pkt->flags);
 
 	switch (pkt->msg_id) {
+	case NRF_MSG_ID_POWER:
+		dump_power(pkt);
+		break;
 	case NRF_MSG_ID_GENERIC:
 	default:
 		dump_generic(pkt);
