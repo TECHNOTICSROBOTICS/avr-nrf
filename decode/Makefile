@@ -1,3 +1,3 @@
 CFLAGS = -Wall
 
-decode:
+decode: nrf_frames.h
