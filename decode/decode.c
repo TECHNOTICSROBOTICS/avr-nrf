@@ -109,11 +109,11 @@ static void dump_generic(struct nrf_frame *pkt)
 
 static void decode(struct nrf_frame *pkt)
 {
-	printf("board_id=%02x, msg_id=%02x, seq=%02x, flags=%02x: ",
+	printf("board_id=%02x, msg_id=%02x, len=%2d, seq=%02x: ",
 	       pkt->board_id,
 	       pkt->msg_id,
-	       pkt->seq,
-	       pkt->flags);
+	       pkt->len,
+	       pkt->seq);
 
 	switch (pkt->msg_id) {
 	case NRF_MSG_ID_POWER:

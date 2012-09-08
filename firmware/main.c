@@ -48,8 +48,8 @@ static void debug_tx(char *msg)
 
 		pkt = (struct nrf_frame *)outbuf;
 		pkt->board_id = get_board_id();
+		pkt->len = 16;
 		pkt->seq = seq++;
-		pkt->flags = 0;
 
 		snprintf((char *)pkt->msg.generic, sizeof(pkt->msg.generic),
 				"%02x %s",

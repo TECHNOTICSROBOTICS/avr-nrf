@@ -12,8 +12,8 @@ struct nrf_power {
 struct nrf_frame {
 	uint8_t board_id;
 	uint8_t msg_id;
+	uint8_t len;
 	uint8_t seq;
-	uint8_t flags;
 	union {
 		uint8_t generic[12];
 		struct nrf_power power;
