@@ -127,7 +127,7 @@ static void print_ts(void)
 
 	/* printf("%03d.%06d ", tv.tv_sec, tv.tv_usec); */
 	timersub(&tv, &last_tv, &temp_tv);
-	printf("%03d.%06d ",
+	printf("%03ld.%06ld ",
 			temp_tv.tv_sec,
 			temp_tv.tv_usec);
 
@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 
 	config_port(fd);
 
-	printf("Start, pkt size = %d bytes\n", sizeof(pkt));
+	printf("Start, pkt size = %ld bytes\n", sizeof(pkt));
 	for (;;) {
 		ret = read(fd, &pkt, sizeof(pkt));
 		if (ret != sizeof(pkt)) {
