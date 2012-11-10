@@ -166,9 +166,13 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	fd = open_port(argv[1]);
+	if (strncmp("-", argv[1], 1) == 0) {
+		fd = fileno(stdin);
+	} else {
+		fd = open_port(argv[1]);
 
-	config_port(fd);
+		config_port(fd);
+	}
 
 	printf("Start, pkt size = %ld bytes\n", sizeof(pkt));
 	for (;;) {
