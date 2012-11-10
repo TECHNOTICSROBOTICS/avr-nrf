@@ -8,6 +8,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <string.h>
+#include <endian.h>
 
 #include "nrf_frames.h"
 
@@ -60,6 +61,12 @@ static int config_port(int fd)
 static void dump_power(struct nrf_frame *pkt)
 {
 	struct nrf_power *pwr = &pkt->msg.power;
+
+	pwr->value[0] = le16toh(pwr->value[0]);
+	pwr->value[1] = le16toh(pwr->value[1]);
+	pwr->value[2] = le16toh(pwr->value[2]);
+	pwr->value[3] = le16toh(pwr->value[3]);
+	pwr->vbatt = le16toh(pwr->vbatt);
 
 	printf("power: "
 	       "value=%4d,%4d,%4d,%4d vbatt=%4d",
