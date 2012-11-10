@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "nrf_frames.h"
 
@@ -110,8 +112,31 @@ static void dump_generic(struct nrf_frame *pkt)
 	       printable(bytes[11]));
 }
 
+static struct timeval last_tv;
+static void print_ts(void)
+{
+	struct timeval tv;
+	struct timeval temp_tv;
+	int ret;
+
+	ret = gettimeofday(&tv, NULL);
+	if (ret < 0) {
+		perror("gettimeofday");
+		exit(1);
+	}
+
+	/* printf("%03d.%06d ", tv.tv_sec, tv.tv_usec); */
+	timersub(&tv, &last_tv, &temp_tv);
+	printf("%03d.%06d ",
+			temp_tv.tv_sec,
+			temp_tv.tv_usec);
+
+	memcpy(&last_tv, &tv, sizeof(tv));
+}
+
 static void decode(struct nrf_frame *pkt)
 {
+	print_ts();
 	printf("board_id=%02x, msg_id=%02x, len=%2d, seq=%02x: ",
 	       pkt->board_id,
 	       pkt->msg_id,
