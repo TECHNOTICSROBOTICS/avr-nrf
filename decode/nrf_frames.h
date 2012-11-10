@@ -3,6 +3,8 @@
 #define NRF_MSG_ID_GENERIC	0x00
 #define NRF_MSG_ID_POWER	0x01
 
+#define NRF_POWER_VBATT_CHARGING	(1 << 15)
+#define NRF_POWER_VBATT_MASK		0x7fff
 struct nrf_power {
 	uint16_t value[4];
 	uint16_t vbatt;

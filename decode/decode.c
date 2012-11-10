@@ -65,7 +65,10 @@ static void dump_power(struct nrf_frame *pkt)
 	       pwr->value[1],
 	       pwr->value[2],
 	       pwr->value[3],
-	       pwr->vbatt);
+	       pwr->vbatt & NRF_POWER_VBATT_MASK);
+
+	if (pwr->vbatt & NRF_POWER_VBATT_CHARGING)
+		putchar('+');
 }
 
 static void dump_generic(struct nrf_frame *pkt)
