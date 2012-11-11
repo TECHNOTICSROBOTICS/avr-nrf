@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <endian.h>
+#include <errno.h>
 
 #include <usb.h>
 #include "opendevice.h"
@@ -207,12 +208,15 @@ int main(int argc, char **argv)
 
 	printf("Start, pkt size = %ld bytes\n", sizeof(pkt));
 	for (;;) {
-		if (usb)
+		if (usb) {
 			ret = usb_bulk_read(handle, USB_EP_IN,
 					(char *)&pkt, sizeof(pkt),
-					1000);
-		else
+					10000);
+			if (ret == -ETIMEDOUT)
+				continue;
+		} else {
 			ret = read(fd, &pkt, sizeof(pkt));
+		}
 
 		if (ret != sizeof(pkt)) {
 			perror("read");
