@@ -15,7 +15,8 @@
 
 #include "nrf_frames.h"
 
-#define PRODUCT "avr-nrf"
+#define USB_PRODUCT "avr-nrf"
+#define USB_EP_IN 2
 
 static int open_port(char * path)
 {
@@ -185,9 +186,12 @@ int main(int argc, char **argv)
 	if (strcmp("-", argv[1]) == 0) {
 		fd = fileno(stdin);
 	} else if (strcmp("usb", argv[1]) == 0) {
-		ret = usbOpenDevice(&handle, 0, NULL, 0, PRODUCT, NULL, NULL, NULL);
+		ret = usbOpenDevice(&handle,
+				0, NULL,
+				0, USB_PRODUCT,
+				NULL, NULL, NULL);
 		if (ret) {
-			fprintf(stderr, "error: could not find USB device \"%s\"\n", PRODUCT);
+			fprintf(stderr, "error: could not find USB device \"%s\"\n", USB_PRODUCT);
 			exit(1);
 		}
 		usb = 1;
@@ -199,7 +203,13 @@ int main(int argc, char **argv)
 
 	printf("Start, pkt size = %ld bytes\n", sizeof(pkt));
 	for (;;) {
-		ret = read(fd, &pkt, sizeof(pkt));
+		if (usb)
+			ret = usb_bulk_read(handle, USB_EP_IN,
+					(char *)&pkt, sizeof(pkt),
+					1000);
+		else
+			ret = read(fd, &pkt, sizeof(pkt));
+
 		if (ret != sizeof(pkt)) {
 			perror("read");
 			exit(1);
