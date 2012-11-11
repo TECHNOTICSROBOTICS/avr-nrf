@@ -166,6 +166,7 @@ static void decode(struct nrf_frame *pkt)
 	}
 
 	printf("\n");
+	fflush(stdout);
 }
 
 int main(int argc, char **argv)
@@ -179,7 +180,10 @@ int main(int argc, char **argv)
 	usb_init();
 
 	if (argc != 2) {
-		fprintf(stderr, "%s: PORT\n", argv[0]);
+		fprintf(stderr, "Usage:\n");
+		fprintf(stderr, "  %s: PORT\n", argv[0]);
+		fprintf(stderr, "  %s: usb\n", argv[0]);
+		fprintf(stderr, "  %s: -\n", argv[0]);
 		exit(1);
 	}
 
