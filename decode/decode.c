@@ -10,7 +10,12 @@
 #include <string.h>
 #include <endian.h>
 
+#include <usb.h>
+#include "opendevice.h"
+
 #include "nrf_frames.h"
+
+#define PRODUCT "avr-nrf"
 
 static int open_port(char * path)
 {
@@ -165,16 +170,27 @@ static void decode(struct nrf_frame *pkt)
 int main(int argc, char **argv)
 {
 	int fd;
+	int usb = 0;
 	struct nrf_frame pkt;
 	int ret;
+	usb_dev_handle *handle = NULL;
+
+	usb_init();
 
 	if (argc != 2) {
 		fprintf(stderr, "%s: PORT\n", argv[0]);
 		exit(1);
 	}
 
-	if (strncmp("-", argv[1], 1) == 0) {
+	if (strcmp("-", argv[1]) == 0) {
 		fd = fileno(stdin);
+	} else if (strcmp("usb", argv[1]) == 0) {
+		ret = usbOpenDevice(&handle, 0, NULL, 0, PRODUCT, NULL, NULL, NULL);
+		if (ret) {
+			fprintf(stderr, "error: could not find USB device \"%s\"\n", PRODUCT);
+			exit(1);
+		}
+		usb = 1;
 	} else {
 		fd = open_port(argv[1]);
 
@@ -192,7 +208,10 @@ int main(int argc, char **argv)
 		decode(&pkt);
 	}
 
-	close(fd);
+	if (usb)
+		usb_close(handle);
+	else
+		close(fd);
 
 	return 0;
 }
