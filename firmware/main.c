@@ -104,7 +104,9 @@ ISR(INT7_vect)
 
 ISR(WDT_vect)
 {
+#if 0
 	debug_tx("wdt");
+#endif
 
 	if (chg_read()) {
 		led_a_toggle();
@@ -179,6 +181,26 @@ int main(void)
 		cli();
 		ksz8851_irq();
 		sei();
+#endif
+#if 0
+		net_poll();
+
+		cli();
+		if (ksz8851_has_data()) {
+			blink_tx();
+			//ksz8851_read_fifo(buf, 256);
+		}
+		sei();
+			//ksz8851_send_packet(outbuf, PAYLOAD_SIZE);
+#endif
+#if 0
+		if (button_read()) {
+			cli();
+			debug_tx("button");
+			sei();
+
+			_delay_ms(100);
+		}
 #endif
 
 		cli();
