@@ -4,7 +4,7 @@
 #define BUTTON_PIN  PIND
 #define BUTTON PD0
 
-#define button_init() do { BUTTON_PORT |= _BV(BUTTON_HWB); } while (0)
+#define button_init() do { BUTTON_PORT |= _BV(BUTTON); } while (0)
 #define button_read() (!(BUTTON_PIN & _BV(BUTTON)))
 
 /* leds */
