@@ -19,7 +19,6 @@ static uint8_t bound = 0;
 static uint8_t remote_mac[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static uint8_t remote_ip[4] = {0, 0, 0, 0};
 static uint8_t buf[NETBUF_SZ];
-static uint16_t net_idx;
 
 static void eeprom_restore (void)
 {
@@ -93,6 +92,7 @@ static void process_udp (uint8_t * buf)
 	ksz8851_send_packet(buf, DATA_OFF + size);
 }
 
+static uint16_t lastshot = 0;
 static void process_periodic_udp(uint8_t * buf)
 {
 	struct ethhdr * eth;
@@ -101,12 +101,15 @@ static void process_periodic_udp(uint8_t * buf)
 	uint8_t * data;
 	uint16_t size;
 
+	if (jiffies - lastshot < HZ / 2)
+		return;
+
 	eth = (struct ethhdr *)&buf[0];
 	ip = (struct iphdr *)&buf[ETH_HLEN];
 	udp = (struct udphdr *)&buf[ETH_HLEN + IP_HLEN];
 	data = &buf[ETH_HLEN + IP_HLEN + UDP_HLEN];
 
-	if (!bound && net_idx == 0) {
+	if (!bound) {
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
 		size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
 				"/discover"
@@ -121,7 +124,7 @@ static void process_periodic_udp(uint8_t * buf)
 		build_udp(udp, 9999, 9999, size);
 
 		ksz8851_send_packet(buf, DATA_OFF + size);
-	} else if (bound && net_idx == 0) {
+	} else if (bound) {
 		int32_t *i;
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
 		size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
@@ -133,8 +136,8 @@ static void process_periodic_udp(uint8_t * buf)
 		buf[DATA_OFF + size + 1] = 'i';
 		size += 4;
 
-		i = &buf[DATA_OFF + size];
-		*i = be32(12345678);
+		i = (int32_t *)&buf[DATA_OFF + size];
+		*i = be32((uint32_t)jiffies);
 		size += 4;
 
 		build_ethernet(eth, remote_mac, my_mac);
@@ -143,9 +146,8 @@ static void process_periodic_udp(uint8_t * buf)
 
 		ksz8851_send_packet(buf, DATA_OFF + size);
 	}
-  
-	net_idx++;
-	net_idx &= 0x1ff;
+
+	lastshot = jiffies;
 }
 
 void net_poll(void)
