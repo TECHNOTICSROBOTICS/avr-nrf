@@ -32,6 +32,7 @@
 #include "blink.h"
 #include "suspend.h"
 #include "fifo.h"
+#include "net/base.h"
 
 #include "../decode/nrf_frames.h"
 
@@ -95,6 +96,9 @@ ISR(INT4_vect)
 
 ISR(INT6_vect)
 {
+#if 0 /* in polling mode */
+	ksz8851_irq();
+#endif
 }
 
 ISR(INT7_vect)
@@ -177,23 +181,6 @@ int main(void)
 			blink_rx();
 		sei();
 #endif
-
-#if 0
-		cli();
-		ksz8851_irq();
-		sei();
-#endif
-#if 0
-		net_poll();
-
-		cli();
-		if (ksz8851_has_data()) {
-			blink_tx();
-			//ksz8851_read_fifo(buf, 256);
-		}
-		sei();
-			//ksz8851_send_packet(outbuf, PAYLOAD_SIZE);
-#endif
 #if 0
 		if (button_read()) {
 			cli();
@@ -203,6 +190,9 @@ int main(void)
 			_delay_ms(100);
 		}
 #endif
+		cli();
+		net_poll();
+		sei();
 
 		cli();
 		if (fifo_count(&rf_rx_fifo) && eps[2].state == EP_IDLE) {

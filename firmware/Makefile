@@ -30,12 +30,14 @@ AVRDUDEFLAGS = -cusbasp -p$(MCU)
 DFU_UTIL = dfu-util
 DFU_UTIL_FLAGS = -R
 
-CFLAGS  = -Iusb -Wall -mmcu=$(MCU) -DF_CPU=$(F_CPU) -DXTAL=$(XTAL)
+CFLAGS  = -Inet -Iusb -Wall -mmcu=$(MCU) -DF_CPU=$(F_CPU) -DXTAL=$(XTAL)
 ASFLAGS =
 LDFLAGS =
 
-OBJS = version.o main.o board.o suspend.o spi.o nrf24l01p.o ksz8851snl.o blink.o \
-       fifo.o descr.o ep0.o usb/dfu_common.o usb/usb.o usb/atu2.o
+OBJS = version.o main.o board.o suspend.o spi.o nrf24l01p.o ksz8851snl.o \
+       blink.o fifo.o descr.o ep0.o \
+       net/base.o net/net.o \
+       usb/dfu_common.o usb/usb.o usb/atu2.o
 
 # ----- Verbosity control -----------------------------------------------------
 
