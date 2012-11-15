@@ -13,7 +13,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "blink.h"
 #include "suspend.h"
+
+volatile uint16_t jiffies;
 
 static volatile uint8_t led_timeout_a;
 static volatile uint8_t led_timeout_b;
@@ -27,7 +30,7 @@ void blink_init(void)
 	TCCR0B = ( (0 << WGM02) |
 		   (1 << CS02) | (0 << CS01) | (1 << CS00) ); /* /1024 */
 
-	OCR0A = F_CPU / 1024 / 200; /* about 200Hz */
+	OCR0A = F_CPU / 1024 / HZ; /* about 200Hz */
 
 	led_timeout_a = 0;
 	led_timeout_b = 0;
@@ -49,6 +52,8 @@ ISR(TIMER0_COMPA_vect)
 
 	if (!led_timeout_a && !led_timeout_b && !led_timeout_c )
 		suspend_enable(SLEEP_TIMER0);
+
+	jiffies++;
 }
 
 void blink_status(void)
