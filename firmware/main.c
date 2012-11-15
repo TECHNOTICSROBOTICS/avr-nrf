@@ -134,6 +134,7 @@ int main(void)
 	spi_init();
 	blink_init();
 	chg_init();
+	button_init();
 
 	_delay_ms(10);
 
