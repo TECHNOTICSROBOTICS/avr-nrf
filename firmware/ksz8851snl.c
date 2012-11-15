@@ -13,6 +13,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <stdlib.h>
 
 #include "spi.h"
 #include "blink.h"
@@ -98,8 +99,16 @@ static void ksz8851_read_fifo(uint8_t *buf, uint16_t length)
 	eth_cs_l();
 
 	spi_io(OP_FIFO_READ);
+
+	/* trash first 8 bytes */
+	for (i = 0; i < 8; i++)
+		spi_io(0xff);
+
 	for (i = 0; i < length; i++)
-		buf[i] = spi_io(0xff);
+		if (buf)
+			buf[i] = spi_io(0xff);
+		else
+			spi_io(0xff);
 
 	eth_cs_h();
 }
@@ -130,11 +139,52 @@ static void ksz8851_set_pm(uint8_t mode)
 
 void ksz8851_send_packet(uint8_t *buf, uint16_t length)
 {
-	blink_tx();
 	ksz8851_write_reg(KS_RXQCR, rxqcr | RXQCR_SDA);
 	ksz8851_write_fifo(buf, length);
 	ksz8851_write_reg(KS_RXQCR, rxqcr);
 	ksz8851_write_reg(KS_TXQCR, TXQCR_METFE);
+}
+
+uint16_t ksz8851_read_packet(uint8_t *buf, uint16_t limit)
+{
+	uint16_t rxlen;
+	uint16_t rxfctr;
+
+	rxfctr = ksz8851_read_reg(KS_RXFC);
+
+	rxlen = ksz8851_read_reg(KS_RXFHBCR);
+
+	ksz8851_write_reg(KS_RXFDPR, RXFDPR_RXFPAI | 0x00);
+	ksz8851_write_reg(KS_RXQCR,
+			 rxqcr | RXQCR_SDA | RXQCR_ADRFE);
+
+	if (rxlen > 4 && rxlen <= limit) {
+		rxlen += (rxlen & 0x03) ? 4 - (rxlen & 0x03) : 0;
+		ksz8851_read_fifo(buf, rxlen);
+	} else {
+		rxlen += (rxlen & 0x03) ? 4 - (rxlen & 0x03) : 0;
+		ksz8851_read_fifo(NULL, rxlen);
+		rxlen = 0;
+	}
+
+	ksz8851_write_reg(KS_RXQCR, rxqcr);
+
+	return rxlen;
+}
+
+uint8_t ksz8851_has_data(void)
+{
+	uint16_t isr;
+
+	isr = ksz8851_read_reg(KS_ISR);
+
+	if (isr & IRQ_RXI) {
+		ksz8851_write_reg(KS_ISR, isr);
+		return 1;
+	} else {
+		ksz8851_write_reg(KS_ISR, isr);
+		return 0;
+	}
 }
 
 void ksz8851_irq(void)
