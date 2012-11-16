@@ -199,6 +199,9 @@ int main(int argc, char **argv)
 			fprintf(stderr, "error: could not find USB device \"%s\"\n", USB_PRODUCT);
 			exit(1);
 		}
+
+		usb_claim_interface(handle, 0);
+
 		usb = 1;
 	} else {
 		fd = open_port(argv[1]);
@@ -226,10 +229,12 @@ int main(int argc, char **argv)
 		decode(&pkt);
 	}
 
-	if (usb)
+	if (usb) {
+		usb_release_interface(handle, 0);
 		usb_close(handle);
-	else
+	} else {
 		close(fd);
+	}
 
 	return 0;
 }
