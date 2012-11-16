@@ -149,27 +149,35 @@ uint16_t ksz8851_read_packet(uint8_t *buf, uint16_t limit)
 {
 	uint16_t rxlen;
 	uint16_t rxfctr;
+	uint16_t ret;
+	uint8_t i;
 
 	rxfctr = ksz8851_read_reg(KS_RXFC);
 
-	rxlen = ksz8851_read_reg(KS_RXFHBCR);
+	rxfctr = rxfctr >> 8;
+	for (i = 0; i < rxfctr; i++) {
+		rxlen = ksz8851_read_reg(KS_RXFHBCR);
 
-	ksz8851_write_reg(KS_RXFDPR, RXFDPR_RXFPAI | 0x00);
-	ksz8851_write_reg(KS_RXQCR,
-			 rxqcr | RXQCR_SDA | RXQCR_ADRFE);
+		ksz8851_write_reg(KS_RXFDPR, RXFDPR_RXFPAI | 0x00);
+		ksz8851_write_reg(KS_RXQCR,
+				rxqcr | RXQCR_SDA | RXQCR_ADRFE);
 
-	if (rxlen > 4 && rxlen <= limit) {
-		rxlen += (rxlen & 0x03) ? 4 - (rxlen & 0x03) : 0;
-		ksz8851_read_fifo(buf, rxlen);
-	} else {
-		rxlen += (rxlen & 0x03) ? 4 - (rxlen & 0x03) : 0;
-		ksz8851_read_fifo(NULL, rxlen);
-		rxlen = 0;
+		if (rxlen > 4) {
+			if (i == 0 && rxlen <= limit) {
+				rxlen -= rxlen % 4;
+				ksz8851_read_fifo(buf, rxlen);
+				ret = rxlen;
+			} else {
+				rxlen -= rxlen % 4;
+				ksz8851_read_fifo(NULL, rxlen);
+				ret = 0;
+			}
+		}
+
+		ksz8851_write_reg(KS_RXQCR, rxqcr);
 	}
 
-	ksz8851_write_reg(KS_RXQCR, rxqcr);
-
-	return rxlen;
+	return ret;
 }
 
 uint8_t ksz8851_has_data(void)
