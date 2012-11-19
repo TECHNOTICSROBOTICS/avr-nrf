@@ -215,7 +215,8 @@ int main(int argc, char **argv)
 			ret = usb_bulk_read(handle, USB_EP_IN,
 					(char *)&pkt, sizeof(pkt),
 					10000);
-			if (ret == -ETIMEDOUT)
+			if (ret == -ETIMEDOUT ||
+			    ret == -EAGAIN)
 				continue;
 		} else {
 			ret = read(fd, &pkt, sizeof(pkt));
