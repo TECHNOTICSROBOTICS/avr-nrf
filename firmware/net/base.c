@@ -8,6 +8,7 @@
 #include "net.h"
 #include "../defines.h"
 #include "../ksz8851snl.h"
+#include "../fifo.h"
 #include "../blink.h"
 
 #define NETBUF_SZ 256
@@ -20,6 +21,12 @@ static uint8_t bound = 0;
 static uint8_t remote_mac[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static uint8_t remote_ip[4] = {0, 0, 0, 0};
 static uint8_t buf[NETBUF_SZ];
+
+struct osc_nrf_frame {
+	char fmt[4];
+	uint32_t len;
+	uint8_t data[PAYLOAD_SIZE];
+};
 
 static void eeprom_restore (void)
 {
@@ -102,9 +109,6 @@ static void process_periodic_udp(uint8_t * buf)
 	uint8_t * data;
 	uint16_t size;
 
-	if (jiffies - lastshot < HZ / 2)
-		return;
-
 	eth = (struct ethhdr *)&buf[0];
 	ip = (struct iphdr *)&buf[ETH_HLEN];
 	udp = (struct udphdr *)&buf[ETH_HLEN + IP_HLEN];
@@ -114,6 +118,9 @@ static void process_periodic_udp(uint8_t * buf)
 		bound = 0;
 
 	if (!bound) {
+		if (jiffies - lastshot < HZ / 2)
+			return;
+
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
 		size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
 				"/nrf/discover"
@@ -129,20 +136,24 @@ static void process_periodic_udp(uint8_t * buf)
 
 		ksz8851_send_packet(buf, DATA_OFF + size);
 	} else if (bound) {
-		int32_t *i;
+		struct osc_nrf_frame *frm;
+
+		if (!fifo_count(&rf_rx_fifo))
+			return;
+
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
 		size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
 				"/nrf/io"
 			       );
 		size += (4 - (size % 4));
 
-		memcpy(&buf[DATA_OFF + size], ",\0\0\0", 4);
-		buf[DATA_OFF + size + 1] = 'i';
-		size += 4;
-
-		i = (int32_t *)&buf[DATA_OFF + size];
-		*i = be32((uint32_t)jiffies);
-		size += 4;
+		frm = (struct osc_nrf_frame *)&buf[DATA_OFF + size];
+		frm->fmt[0] = ',';
+		frm->fmt[1] = 'b';
+		frm->len = be32(PAYLOAD_SIZE);
+		memcpy(&frm->data, fifo_get_tail(&rf_rx_fifo), PAYLOAD_SIZE);
+		fifo_pop(&rf_rx_fifo);
+		size += sizeof(struct osc_nrf_frame);
 
 		build_ethernet(eth, remote_mac, my_mac);
 		build_ip(ip, remote_ip, my_ip, IPPROTO_UDP, UDP_HLEN + size);
