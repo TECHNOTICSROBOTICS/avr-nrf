@@ -14,6 +14,11 @@
 #define NETBUF_SZ 256
 #define NET_TIMEOUT 10
 
+#define MSG_DISCOVER	"/nrf/discover"
+#define MSG_IO		"/nrf/io"
+#define MSG_INIT	"/nrf/init"
+#define MSG_BOUND	"/nrf/bound"
+
 static uint8_t EEMEM my_mac_ee[6] = {0x00, 0x21, 0xf3, 0x00, 0x32, 0x02};
 static uint8_t EEMEM my_ip_ee[4] = {172, 16, 0, 33};
 /* TODO: manage defaults and set MAC in phy */
@@ -80,7 +85,7 @@ static void process_udp (uint8_t * buf)
 
 	size = be16(udp->len) - UDP_HLEN;
 
-	if (size == 16 && memcmp(data, "/nrf/init", 9) == 0) {
+	if (size == 16 && memcmp(data, MSG_INIT, sizeof(MSG_INIT) - 1) == 0) {
 		memcpy(remote_ip, &ip->daddr, 4);
 		memcpy(remote_mac, &eth->h_dest, ETH_ALEN);
 		bound = 1;
@@ -95,8 +100,7 @@ static void process_udp (uint8_t * buf)
 
 	memset(data, 0, NETBUF_SZ - DATA_OFF);
 	size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
-			"/nrf/bound"
-		       );
+			MSG_BOUND);
 	size += (4 - (size % 4));
 
 	frm = (struct osc_bound_frame *)&buf[DATA_OFF + size];
@@ -146,8 +150,7 @@ static void process_periodic_udp(uint8_t * buf)
 
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
 		size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
-				"/nrf/discover"
-			       );
+				MSG_DISCOVER);
 		size += (4 - (size % 4));
 
 		buf[DATA_OFF + size] = ',';
@@ -166,8 +169,7 @@ static void process_periodic_udp(uint8_t * buf)
 
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
 		size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
-				"/nrf/io"
-			       );
+				MSG_IO);
 		size += (4 - (size % 4));
 
 		frm = (struct osc_nrf_frame *)&buf[DATA_OFF + size];
