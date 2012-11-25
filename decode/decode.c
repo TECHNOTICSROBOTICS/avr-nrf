@@ -14,6 +14,8 @@
 #include <usb.h>
 #include "opendevice.h"
 
+#include "net.h"
+
 #include "nrf_frames.h"
 
 #define USB_PRODUCT "avr-nrf"
@@ -198,7 +200,7 @@ int main(int argc, char **argv)
 		fd = fileno(stdin);
 		mode = MODE_FILE;
 	} else if (atoi(argv[1]) != 0) {
-		printf("net\n");
+		net_init(atoi(argv[1]));
 		mode = MODE_NET;
 	} else if (strcmp("usb", argv[1]) == 0) {
 		ret = usbOpenDevice(&handle,
@@ -223,15 +225,22 @@ int main(int argc, char **argv)
 
 	printf("Start, pkt size = %ld bytes\n", sizeof(pkt));
 	for (;;) {
-		if (mode == MODE_USB) {
-			ret = usb_bulk_read(handle, USB_EP_IN,
-					(char *)&pkt, sizeof(pkt),
-					10000);
-			if (ret == -ETIMEDOUT ||
-			    ret == -EAGAIN)
-				continue;
-		} else {
-			ret = read(fd, &pkt, sizeof(pkt));
+		switch (mode) {
+			case MODE_FILE:
+				ret = read(fd, &pkt, sizeof(pkt));
+				break;
+			case MODE_USB:
+				ret = usb_bulk_read(handle, USB_EP_IN,
+						(char *)&pkt, sizeof(pkt),
+						10000);
+				if (ret == -ETIMEDOUT || ret == -EAGAIN)
+					continue;
+				break;
+			case MODE_NET:
+				ret = net_poll();
+				if (ret == -EAGAIN)
+					continue;
+				break;
 		}
 
 		if (ret != sizeof(pkt)) {
@@ -242,11 +251,17 @@ int main(int argc, char **argv)
 		decode(&pkt);
 	}
 
-	if (mode == MODE_USB) {
-		usb_release_interface(handle, 0);
-		usb_close(handle);
-	} else {
-		close(fd);
+	switch (mode) {
+		case MODE_FILE:
+			close(fd);
+			break;
+		case MODE_USB:
+			usb_release_interface(handle, 0);
+			usb_close(handle);
+			break;
+		case MODE_NET:
+			net_close();
+			break;
 	}
 
 	return 0;
