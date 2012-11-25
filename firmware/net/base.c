@@ -12,6 +12,8 @@
 #include "../blink.h"
 
 #define NETBUF_SZ 256
+#define NET_TIMEOUT 10
+
 static uint8_t EEMEM my_mac_ee[6] = {0x00, 0x21, 0xf3, 0x00, 0x32, 0x02};
 static uint8_t EEMEM my_ip_ee[4] = {172, 16, 0, 33};
 /* TODO: manage defaults and set MAC in phy */
@@ -29,6 +31,15 @@ struct osc_nrf_frame {
 	char fmt[4];
 	uint32_t len;
 	uint8_t data[PAYLOAD_SIZE];
+};
+
+struct osc_bound_frame {
+	char fmt[8];
+	uint32_t timeout;
+	uint32_t ip;
+	uint32_t mac_len;
+	uint8_t mac_data[6];
+	uint8_t _pad[2];
 };
 
 static void eeprom_restore (void)
@@ -53,21 +64,23 @@ static void process_udp (uint8_t * buf)
 	uint8_t * data;
 	uint16_t size;
 
+	struct osc_bound_frame *frm;
+
 	eth = (struct ethhdr *)&buf[0];
 	ip = (struct iphdr *)&buf[ETH_HLEN];
 	udp = (struct udphdr *)&buf[ETH_HLEN + IP_HLEN];
 	data = &buf[ETH_HLEN + IP_HLEN + UDP_HLEN];
 
+	if (be16(udp->dest) != 9999)
+		return;
+
 	swap_ethernet(eth);
 	swap_ip(ip);
 	swap_udp(udp);
 
-	if (be16(udp->source) != 9999)
-		return;
-
 	size = be16(udp->len) - UDP_HLEN;
 
-	if (size == 12 && memcmp(data, "/init", 5) == 0) {
+	if (size == 16 && memcmp(data, "/nrf/init", 9) == 0) {
 		memcpy(remote_ip, &ip->daddr, 4);
 		memcpy(remote_mac, &eth->h_dest, ETH_ALEN);
 		bound = 1;
@@ -82,16 +95,20 @@ static void process_udp (uint8_t * buf)
 
 	memset(data, 0, NETBUF_SZ - DATA_OFF);
 	size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
-			"/nrf/bound %d.%d.%d.%d:%d [%02x:%02x:%02x:%02x:%02x:%02x]",
-			remote_ip[0], remote_ip[1], remote_ip[2], remote_ip[3],
-			be16(udp->source),
-			remote_mac[0], remote_mac[1], remote_mac[2],
-			remote_mac[3], remote_mac[4], remote_mac[5]
+			"/nrf/bound"
 		       );
 	size += (4 - (size % 4));
 
-	buf[DATA_OFF + size] = ',';
-	size += 4;
+	frm = (struct osc_bound_frame *)&buf[DATA_OFF + size];
+	frm->fmt[0] = ',';
+	frm->fmt[1] = 'i';
+	frm->fmt[2] = 'i';
+	frm->fmt[3] = 'b';
+	frm->timeout = be32(NET_TIMEOUT);
+	memcpy(&frm->ip, remote_ip, 4);
+	frm->mac_len = be32(6);
+	memcpy(&frm->mac_data, remote_mac, 6);
+	size += sizeof(struct osc_bound_frame);
 
 	ip->tot_len = be16(IP_HLEN + UDP_HLEN + size);
 	udp->len = be16(UDP_HLEN + size);
@@ -120,7 +137,7 @@ static void process_periodic_udp(uint8_t * buf)
 	if (button_read())
 		bound = 0;
 
-	if (jiffies - boundtime > 10 * HZ)
+	if (jiffies - boundtime > NET_TIMEOUT * HZ)
 		bound = 0;
 
 	if (!bound) {
