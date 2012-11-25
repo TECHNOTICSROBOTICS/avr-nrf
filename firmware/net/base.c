@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "net.h"
+#include "../defines.h"
 #include "../ksz8851snl.h"
 #include "../blink.h"
 
@@ -108,6 +109,9 @@ static void process_periodic_udp(uint8_t * buf)
 	ip = (struct iphdr *)&buf[ETH_HLEN];
 	udp = (struct udphdr *)&buf[ETH_HLEN + IP_HLEN];
 	data = &buf[ETH_HLEN + IP_HLEN + UDP_HLEN];
+
+	if (button_read())
+		bound = 0;
 
 	if (!bound) {
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
