@@ -19,6 +19,12 @@
 #define USB_PRODUCT "avr-nrf"
 #define USB_EP_IN 2
 
+static enum {
+	MODE_FILE = 0,
+	MODE_USB,
+	MODE_NET
+} mode;
+
 static int open_port(char * path)
 {
 	int ret;
@@ -173,7 +179,6 @@ static void decode(struct nrf_frame *pkt)
 int main(int argc, char **argv)
 {
 	int fd;
-	int usb = 0;
 	struct nrf_frame pkt;
 	int ret;
 	usb_dev_handle *handle = NULL;
@@ -182,6 +187,7 @@ int main(int argc, char **argv)
 
 	if (argc != 2) {
 		fprintf(stderr, "Usage:\n");
+		fprintf(stderr, "  %s: DEVICE\n", argv[0]);
 		fprintf(stderr, "  %s: PORT\n", argv[0]);
 		fprintf(stderr, "  %s: usb\n", argv[0]);
 		fprintf(stderr, "  %s: -\n", argv[0]);
@@ -190,6 +196,10 @@ int main(int argc, char **argv)
 
 	if (strcmp("-", argv[1]) == 0) {
 		fd = fileno(stdin);
+		mode = MODE_FILE;
+	} else if (atoi(argv[1]) != 0) {
+		printf("net\n");
+		mode = MODE_NET;
 	} else if (strcmp("usb", argv[1]) == 0) {
 		ret = usbOpenDevice(&handle,
 				0, NULL,
@@ -202,16 +212,18 @@ int main(int argc, char **argv)
 
 		usb_claim_interface(handle, 0);
 
-		usb = 1;
+		mode = MODE_USB;
 	} else {
 		fd = open_port(argv[1]);
 
 		config_port(fd);
+
+		mode = MODE_FILE;
 	}
 
 	printf("Start, pkt size = %ld bytes\n", sizeof(pkt));
 	for (;;) {
-		if (usb) {
+		if (mode == MODE_USB) {
 			ret = usb_bulk_read(handle, USB_EP_IN,
 					(char *)&pkt, sizeof(pkt),
 					10000);
@@ -230,7 +242,7 @@ int main(int argc, char **argv)
 		decode(&pkt);
 	}
 
-	if (usb) {
+	if (mode == MODE_USB) {
 		usb_release_interface(handle, 0);
 		usb_close(handle);
 	} else {
