@@ -143,6 +143,8 @@ void ksz8851_send_packet(uint8_t *buf, uint16_t length)
 	ksz8851_write_fifo(buf, length);
 	ksz8851_write_reg(KS_RXQCR, rxqcr);
 	ksz8851_write_reg(KS_TXQCR, TXQCR_METFE);
+
+	led_net_tx();
 }
 
 uint16_t ksz8851_read_packet(uint8_t *buf, uint16_t limit)
@@ -176,6 +178,8 @@ uint16_t ksz8851_read_packet(uint8_t *buf, uint16_t limit)
 
 		ksz8851_write_reg(KS_RXQCR, rxqcr);
 	}
+
+	led_net_rx();
 
 	return ret;
 }
@@ -211,10 +215,10 @@ void ksz8851_irq(void)
 		;
 
 	if (isr & IRQ_TXI)
-		blink_tx();
+		led_net_tx();
 
 	if (isr & IRQ_RXI)
-		blink_rx();
+		led_net_rx();
 
 	if (isr & IRQ_SPIBEI)
 		;

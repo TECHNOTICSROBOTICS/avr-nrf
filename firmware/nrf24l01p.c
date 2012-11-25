@@ -252,7 +252,7 @@ void nrf_irq(void)
 
 	/* RX data ready */
 	if (status & RX_DR) {
-		blink_rx();
+		led_nrf_rx();
 
 		if (!fifo_full(&rf_rx_fifo)) {
 			if (nrf_rx(fifo_get_head(&rf_rx_fifo), PAYLOADSZ))
@@ -264,7 +264,7 @@ void nrf_irq(void)
 
 	/* TX data sent */
 	if (status & TX_DS) {
-		blink_tx();
+		led_nrf_tx();
 
 		if (fifo_count(&rf_tx_fifo)) {
 			nrf_write_payload(fifo_get_tail(&rf_tx_fifo),

@@ -70,13 +70,15 @@ static void hello(void)
 	_delay_ms(100);
 
 	for (i = 0; i < 5; i++) {
-		led_c_on();
+		led_a_on();
 		led_b_on();
+		led_c_on();
 
 		_delay_ms(50);
 
-		led_c_off();
+		led_a_off();
 		led_b_off();
+		led_c_off();
 
 		_delay_ms(50);
 	}
@@ -112,6 +114,7 @@ ISR(WDT_vect)
 	debug_tx("wdt");
 #endif
 
+#if 0
 	if (chg_read()) {
 		led_a_toggle();
 	} else if (!suspend_check(SLEEP_USB)) {
@@ -119,6 +122,7 @@ ISR(WDT_vect)
 	} else {
 		led_a_on();
 	}
+#endif
 }
 
 static void usb_in(void *user)
@@ -129,6 +133,8 @@ static void usb_in(void *user)
 	}
 
 	nrf_wake_queue();
+
+	led_usb_rx();
 }
 
 int main(void)
@@ -142,7 +148,9 @@ int main(void)
 
 	_delay_ms(10);
 
+#if 0
 	led_a_on();
+#endif
 
 	/* IO init */
 	NRF_DDR |= _BV(NRF_CS) | _BV(NRF_CE);
@@ -200,6 +208,8 @@ int main(void)
 			usb_send(&eps[2], outbuf, PAYLOAD_SIZE,
 				 NULL, NULL);
 			fifo_pop(&rf_rx_fifo);
+
+			led_usb_tx();
 		}
 		sei();
 

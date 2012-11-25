@@ -56,21 +56,21 @@ ISR(TIMER0_COMPA_vect)
 	jiffies++;
 }
 
-void blink_status(void)
+void blink_a(void)
 {
 	led_a_on();
 	led_timeout_a = 2;
 	suspend_disable(SLEEP_TIMER0);
 }
 
-void blink_tx(void)
+void blink_c(void)
 {
 	led_c_on();
 	led_timeout_c = 2;
 	suspend_disable(SLEEP_TIMER0);
 }
 
-void blink_rx(void)
+void blink_b(void)
 {
 	led_b_on();
 	led_timeout_b = 2;
