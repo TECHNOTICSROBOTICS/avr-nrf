@@ -116,7 +116,7 @@ static void process_periodic_udp(uint8_t * buf)
 	if (!bound) {
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
 		size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
-				"/discover"
+				"/nrf/discover"
 			       );
 		size += (4 - (size % 4));
 
@@ -132,7 +132,7 @@ static void process_periodic_udp(uint8_t * buf)
 		int32_t *i;
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
 		size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
-				"/io"
+				"/nrf/io"
 			       );
 		size += (4 - (size % 4));
 
