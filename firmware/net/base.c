@@ -22,6 +22,9 @@ static uint8_t remote_mac[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static uint8_t remote_ip[4] = {0, 0, 0, 0};
 static uint8_t buf[NETBUF_SZ];
 
+static uint16_t boundtime = 0;
+static uint16_t lastshot = 0;
+
 struct osc_nrf_frame {
 	char fmt[4];
 	uint32_t len;
@@ -68,6 +71,7 @@ static void process_udp (uint8_t * buf)
 		memcpy(remote_ip, &ip->daddr, 4);
 		memcpy(remote_mac, &eth->h_dest, ETH_ALEN);
 		bound = 1;
+		boundtime = jiffies;
 	} else {
 		return;
 	}
@@ -100,7 +104,6 @@ static void process_udp (uint8_t * buf)
 	ksz8851_send_packet(buf, DATA_OFF + size);
 }
 
-static uint16_t lastshot = 0;
 static void process_periodic_udp(uint8_t * buf)
 {
 	struct ethhdr * eth;
@@ -115,6 +118,9 @@ static void process_periodic_udp(uint8_t * buf)
 	data = &buf[ETH_HLEN + IP_HLEN + UDP_HLEN];
 
 	if (button_read())
+		bound = 0;
+
+	if (jiffies - boundtime > 10 * HZ)
 		bound = 0;
 
 	if (!bound) {
