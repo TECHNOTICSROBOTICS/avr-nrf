@@ -225,10 +225,14 @@ int main(void)
 			nrf_rx_disable();
 		sei();
 
+#if 0
 		if (can_suspend())
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		else
 			set_sleep_mode(SLEEP_MODE_IDLE);
+#else
+		set_sleep_mode(SLEEP_MODE_IDLE);
+#endif
 		sleep_mode();
 	}
 }
