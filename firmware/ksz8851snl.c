@@ -149,7 +149,7 @@ uint16_t ksz8851_read_packet(uint8_t *buf, uint16_t limit)
 {
 	uint16_t rxlen;
 	uint16_t rxfctr;
-	uint16_t ret;
+	uint16_t ret = 0;
 	uint8_t i;
 
 	rxfctr = ksz8851_read_reg(KS_RXFC);
