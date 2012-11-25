@@ -218,12 +218,16 @@ int main(void)
 			usb_recv(&eps[1], inbuf, PAYLOAD_SIZE, usb_in, inbuf);
 		sei();
 
+#if 0
 		cli();
 		if (suspend_check(SLEEP_USB))
 			nrf_rx_enable();
 		else
 			nrf_rx_disable();
 		sei();
+#else
+		nrf_rx_enable();
+#endif
 
 #if 0
 		if (can_suspend())
