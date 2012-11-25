@@ -78,7 +78,7 @@ static void process_udp (uint8_t * buf)
 
 	memset(data, 0, NETBUF_SZ - DATA_OFF);
 	size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
-			"/bound %d.%d.%d.%d:%d [%02x:%02x:%02x:%02x:%02x:%02x]",
+			"/nrf/bound %d.%d.%d.%d:%d [%02x:%02x:%02x:%02x:%02x:%02x]",
 			remote_ip[0], remote_ip[1], remote_ip[2], remote_ip[3],
 			be16(udp->source),
 			remote_mac[0], remote_mac[1], remote_mac[2],
