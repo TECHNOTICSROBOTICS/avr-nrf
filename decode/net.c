@@ -8,8 +8,16 @@
 #include <string.h>
 #include <errno.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
+#include <sys/select.h>
 
 static int sock;
+
+static struct sockaddr_in6 remote_addr;
+static struct timeval remote_timeout;
+static int remote_valid = 0;
+
+static char buf[1500];
 
 int net_init(int port)
 {
@@ -111,13 +119,20 @@ static int check_bound(char *data, int size)
 	return *len;
 }
 
-int net_poll(char *data, int size)
+static void dbg(char *msg, struct sockaddr_in6 *addr)
+{
+	char addrbuf[32];
+
+	inet_ntop(AF_INET6, &addr->sin6_addr, addrbuf, sizeof(addrbuf));
+	printf("%s: %s:%d\n", msg,
+	       addrbuf, ntohs(addr->sin6_port));
+}
+
+static int get_frame(char *data, int size)
 {
 	int ret;
 	unsigned int len;
 	struct sockaddr_in6 addr;
-	char buf[1500];
-	char addrbuf[32];
 
 	len = sizeof(addr);
 	ret = recvfrom(sock,
@@ -129,19 +144,63 @@ int net_poll(char *data, int size)
 		exit(1);
 	}
 
-	inet_ntop(AF_INET6, &addr.sin6_addr, addrbuf, sizeof(addrbuf));
-	printf("got %d bytes from %s:%d [%s]\n", ret,
-	       addrbuf, ntohs(addr.sin6_port), buf);
-
 	if (memcmp(MSG_DISCOVER, buf, sizeof(MSG_DISCOVER)) == 0) {
+		dbg("send: init (discover)", &addr);
 		net_send_init(&addr, buf, sizeof(buf));
 	} else if (memcmp(MSG_IO, buf, sizeof(MSG_IO)) == 0) {
-		return check_io(buf, ret, data, size);
+		dbg("recv: io", &addr);
+		if (!remote_valid) {
+			net_send_init(&addr, buf, sizeof(buf));
+			return -EAGAIN;
+		} else if (memcmp(&addr, &remote_addr, sizeof(addr)) == 0)
+			return check_io(buf, ret, data, size);
 	} else if (memcmp(MSG_BOUND, buf, sizeof(MSG_BOUND)) == 0) {
-		check_bound(buf, ret);
+		dbg("recv: bound", &addr);
+		ret = check_bound(buf, ret);
+		memcpy(&remote_addr, &addr, sizeof(addr));
+		remote_valid = 1;
+		gettimeofday(&remote_timeout, NULL);
+		remote_timeout.tv_sec += ret * 75 / 100;
+	} else {
+		dbg("recv: UNKNOWN", &addr);
 	}
 
 	return -EAGAIN;
+}
+
+int net_poll(char *data, int size)
+{
+	struct timeval tv;
+	struct timeval to;
+	struct timeval tzero;
+	fd_set rfds;
+	int ret;
+
+	FD_ZERO(&rfds);
+	FD_SET(sock, &rfds);
+
+	if (remote_valid) {
+		timerclear(&tzero);
+		gettimeofday(&tv, NULL);
+		timersub(&remote_timeout, &tv, &to);
+
+		if (!timercmp(&to, &tzero, >)) {
+			dbg("send: init (keepalive)", &remote_addr);
+			net_send_init(&remote_addr, buf, sizeof(buf));
+			remote_valid = 0;
+		} else {
+			ret = select(sock + 1, &rfds, NULL, NULL, &to);
+			if (ret < 0) {
+				perror("select");
+			} else if (ret) {
+				/* fall trough */
+			} else {
+				return -EAGAIN;
+			}
+		}
+	}
+
+	return get_frame(data, size);
 }
 
 void net_close(void)
