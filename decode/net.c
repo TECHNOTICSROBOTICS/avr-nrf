@@ -121,11 +121,13 @@ static int check_bound(char *data, int size)
 
 static void dbg(char *msg, struct sockaddr_in6 *addr)
 {
+#ifdef DEBUG
 	char addrbuf[32];
 
 	inet_ntop(AF_INET6, &addr->sin6_addr, addrbuf, sizeof(addrbuf));
 	printf("%s: %s:%d\n", msg,
 	       addrbuf, ntohs(addr->sin6_port));
+#endif
 }
 
 static int get_frame(char *data, int size)
