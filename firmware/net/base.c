@@ -145,7 +145,7 @@ static void process_periodic_udp(uint8_t * buf)
 		bound = 0;
 
 	if (!bound) {
-		if (jiffies - lastshot < HZ / 2)
+		if (jiffies - lastshot < HZ)
 			return;
 
 		memset(data, 0, NETBUF_SZ - DATA_OFF);
