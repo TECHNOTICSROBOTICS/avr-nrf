@@ -237,7 +237,7 @@ int main(int argc, char **argv)
 					continue;
 				break;
 			case MODE_NET:
-				ret = net_poll();
+				ret = net_poll((char *)&pkt, sizeof(pkt));
 				if (ret == -EAGAIN)
 					continue;
 				break;
