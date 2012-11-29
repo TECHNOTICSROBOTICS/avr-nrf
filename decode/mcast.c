@@ -70,7 +70,6 @@ int mcast_init(int port)
 	addr.sin6_port = htons(MCAST_PORT);
 	memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
 
-	//ret = bind(sock, (struct sockaddr *)&addr, sizeof(addr));
 	ret = bind(sock, (struct sockaddr *)&addr, sizeof(addr));
 	if (ret < 0) {
 		perror("bind");
