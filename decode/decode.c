@@ -15,6 +15,7 @@
 #include "opendevice.h"
 
 #include "net.h"
+#include "mcast.h"
 
 #include "nrf_frames.h"
 
@@ -24,7 +25,8 @@
 static enum {
 	MODE_FILE = 0,
 	MODE_USB,
-	MODE_NET
+	MODE_NET,
+	MODE_MCAST
 } mode;
 
 static int open_port(char * path)
@@ -191,6 +193,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Usage:\n");
 		fprintf(stderr, "  %s: DEVICE\n", argv[0]);
 		fprintf(stderr, "  %s: PORT\n", argv[0]);
+		fprintf(stderr, "  %s: mcast\n", argv[0]);
 		fprintf(stderr, "  %s: usb\n", argv[0]);
 		fprintf(stderr, "  %s: -\n", argv[0]);
 		exit(1);
@@ -199,6 +202,9 @@ int main(int argc, char **argv)
 	if (strcmp("-", argv[1]) == 0) {
 		fd = fileno(stdin);
 		mode = MODE_FILE;
+	} else if (strcmp("mcast", argv[1]) == 0) {
+		mcast_init(atoi(argv[1]));
+		mode = MODE_MCAST;
 	} else if (atoi(argv[1]) != 0) {
 		net_init(atoi(argv[1]));
 		mode = MODE_NET;
@@ -241,6 +247,11 @@ int main(int argc, char **argv)
 				if (ret == -EAGAIN)
 					continue;
 				break;
+			case MODE_MCAST:
+				ret = mcast_poll((char *)&pkt, sizeof(pkt));
+				if (ret == -EAGAIN)
+					continue;
+				break;
 		}
 
 		if (ret != sizeof(pkt)) {
@@ -261,6 +272,9 @@ int main(int argc, char **argv)
 			break;
 		case MODE_NET:
 			net_close();
+			break;
+		case MODE_MCAST:
+			mcast_close();
 			break;
 	}
 
