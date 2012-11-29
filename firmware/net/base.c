@@ -191,6 +191,7 @@ static void process_periodic_udp(uint8_t * buf)
 
 	lastshot = jiffies;
 }
+
 static void process_mcast(uint8_t * buf)
 {
 	struct ethhdr * eth;
