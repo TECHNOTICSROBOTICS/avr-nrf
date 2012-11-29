@@ -27,6 +27,8 @@ static uint8_t my_ip[4] = {172, 16, 0, 33};
 static uint8_t bound = 0;
 static uint8_t remote_mac[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static uint8_t remote_ip[4] = {0, 0, 0, 0};
+static uint8_t remote_mcast_mac[6] = {0x01, 0x00, 0x5e, 0x18, 0x01, 0x01};
+static uint8_t remote_mcast_ip[4] = {224, 24, 1, 1};
 static uint8_t buf[NETBUF_SZ];
 
 static uint16_t boundtime = 0;
@@ -189,9 +191,46 @@ static void process_periodic_udp(uint8_t * buf)
 
 	lastshot = jiffies;
 }
+static void process_mcast(uint8_t * buf)
+{
+	struct ethhdr * eth;
+	struct iphdr * ip;
+	struct udphdr * udp;
+	uint8_t * data;
+	uint16_t size;
+	struct osc_nrf_frame *frm;
+
+	eth = (struct ethhdr *)&buf[0];
+	ip = (struct iphdr *)&buf[ETH_HLEN];
+	udp = (struct udphdr *)&buf[ETH_HLEN + IP_HLEN];
+	data = &buf[ETH_HLEN + IP_HLEN + UDP_HLEN];
+
+	if (!fifo_count(&rf_rx_fifo))
+		return;
+
+	memset(data, 0, NETBUF_SZ - DATA_OFF);
+	size = snprintf((char *)data, NETBUF_SZ - DATA_OFF,
+			MSG_IO);
+	size += (4 - (size % 4));
+
+	frm = (struct osc_nrf_frame *)&buf[DATA_OFF + size];
+	frm->fmt[0] = ',';
+	frm->fmt[1] = 'b';
+	frm->len = be32(PAYLOAD_SIZE);
+	memcpy(&frm->data, fifo_get_tail(&rf_rx_fifo), PAYLOAD_SIZE);
+	fifo_pop(&rf_rx_fifo);
+	size += sizeof(struct osc_nrf_frame);
+
+	build_ethernet(eth, remote_mcast_mac, my_mac);
+	build_ip(ip, remote_mcast_ip, my_ip, IPPROTO_UDP, UDP_HLEN + size);
+	build_udp(udp, 9999, 9999, size);
+
+	ksz8851_send_packet(buf, DATA_OFF + size);
+}
 
 void net_poll(void)
 {
+#ifndef MULTICAST
 	uint16_t len;
 
 	if (ksz8851_has_data()) {
@@ -217,4 +256,7 @@ void net_poll(void)
 	}
 
 	process_periodic_udp(buf);
+#else
+	process_mcast(buf);
+#endif
 }
