@@ -21,14 +21,24 @@
 
 static uint8_t EEMEM my_mac_ee[6] = {0x00, 0x21, 0xf3, 0x00, 0x32, 0x02};
 static uint8_t EEMEM my_ip_ee[4] = {172, 16, 0, 33};
+
 /* TODO: manage defaults and set MAC in phy */
 static uint8_t my_mac[6] = {0x00, 0x21, 0xf3, 0x00, 0x88, 0x51};;
 static uint8_t my_ip[4] = {172, 16, 0, 33};
-static uint8_t bound = 0;
+
 static uint8_t remote_mac[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static uint8_t remote_ip[4] = {0, 0, 0, 0};
+
 static uint8_t remote_mcast_mac[6] = {0x01, 0x00, 0x5e, 0x18, 0x01, 0x01};
 static uint8_t remote_mcast_ip[4] = {224, 24, 1, 1};
+#define IN6ADDR_ANY_INIT { { { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } } }
+#define IN6ADDR_ME    { { { 0xfe,0x80,0,0,0,0,0,0,0x02,0x21,0xf3,0xff,0xfe,0x00,0x88,0x51 } } }
+#define IN6ADDR_MCAST { { { 0xff,0x02,0,0,0,0,0,0,0,0,0,0,0,0x24,0,0x01 } } }
+struct in6_addr my_ipv6 = IN6ADDR_ME;
+struct in6_addr remote_mcast_ipv6 = IN6ADDR_MCAST;
+static uint8_t remote_mcastv6_mac[6] = {0x33, 0x33, 0x00, 0x24, 0x00, 0x01};
+
+static uint8_t bound = 0;
 static uint8_t buf[NETBUF_SZ];
 
 static uint16_t boundtime = 0;
@@ -227,6 +237,45 @@ static void process_mcast(uint8_t * buf)
 	build_udp(udp, 9999, 9999, size);
 
 	ksz8851_send_packet(buf, DATA_OFF + size);
+}
+
+#define DATAV6_OFF (ETH_HLEN + IPV6_HLEN + UDP_HLEN)
+static void process_mcast6(uint8_t *buf)
+{
+	struct ethhdr *eth;
+	struct ipv6hdr *ip6;
+	struct udphdr *udp;
+	uint8_t *data;
+	uint16_t size;
+	struct osc_nrf_frame *frm;
+
+	eth = (struct ethhdr *)&buf[0];
+	ip6 = (struct ipv6hdr *)&buf[ETH_HLEN];
+	udp = (struct udphdr *)&buf[ETH_HLEN + IPV6_HLEN];
+	data = &buf[ETH_HLEN + IPV6_HLEN + UDP_HLEN];
+
+	if (!fifo_count(&rf_rx_fifo))
+		return;
+
+	memset(data, 0, NETBUF_SZ - DATAV6_OFF);
+	size = snprintf((char *)data, NETBUF_SZ - DATAV6_OFF,
+			MSG_IO);
+	size += (4 - (size % 4));
+
+	frm = (struct osc_nrf_frame *)&buf[DATAV6_OFF + size];
+	frm->fmt[0] = ',';
+	frm->fmt[1] = 'b';
+	frm->len = be32(PAYLOAD_SIZE);
+	memcpy(&frm->data, fifo_get_tail(&rf_rx_fifo), PAYLOAD_SIZE);
+	fifo_pop(&rf_rx_fifo);
+	size += sizeof(struct osc_nrf_frame);
+
+	build_ethernet(eth, remote_mcastv6_mac, my_mac, ETH_P_IPV6);
+	build_ipv6(ip6, &remote_mcast_ipv6, &my_ipv6, IPPROTO_UDP, UDP_HLEN + size);
+	build_udp(udp, 9999, 9999, size);
+	build_udp_checksum_v6(ip6, udp, size);
+
+	ksz8851_send_packet(buf, DATAV6_OFF + size);
 }
 
 void net_poll(void)
