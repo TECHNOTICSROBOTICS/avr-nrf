@@ -8,6 +8,31 @@
 
 /* common functions */
 
+static uint32_t partial_sum;
+void checksum_init(uint8_t type)
+{
+	partial_sum = type;
+}
+void checksum_step(uint8_t *buf, uint16_t len)
+{
+	/* build the sum of 16bit words */
+	while (len > 1) {
+		partial_sum += 0xFFFF & (*buf << 8 | *(buf + 1));
+		buf += 2;
+		len -= 2;
+	}
+}
+uint16_t checksum_end(void)
+{
+	/* now calculate the sum over the bytes in the sum */
+	/* until the result is only 16bit long */
+	while (partial_sum >> 16) {
+		partial_sum = (partial_sum & 0xFFFF) + (partial_sum >> 16);
+	}
+	/* build 1's complement: */
+	return ((uint16_t) partial_sum ^ 0xFFFF);
+}
+
 uint16_t checksum(uint8_t *buf, uint16_t len, uint8_t type)
 {
 	uint32_t sum = type;
@@ -46,7 +71,7 @@ uint32_t be32(uint32_t x)
 
 /* Ehernet layer */
 
-void build_ethernet(struct ethhdr * hdr, uint8_t * dst, uint8_t * src)
+void build_ethernet(struct ethhdr * hdr, uint8_t * dst, uint8_t * src, uint16_t h_proto)
 {
 	if (dst == NULL)
 		memset(&hdr->h_dest, 0xff, ETH_ALEN);
@@ -55,7 +80,7 @@ void build_ethernet(struct ethhdr * hdr, uint8_t * dst, uint8_t * src)
 
 	memcpy(&hdr->h_source, src, ETH_ALEN);
 
-	hdr->h_proto = be16(ETH_P_IP);
+	hdr->h_proto = be16(h_proto);
 }
 
 void reply_ethernet(struct ethhdr * hdr, uint8_t * src)
@@ -147,6 +172,19 @@ void build_ip(struct iphdr * hdr, uint8_t * dst, uint8_t * src,
 	hdr->check = be16(checksum((uint8_t *)hdr, IP_HLEN, 0));
 }
 
+void build_ipv6(struct ipv6hdr *hdr, struct in6_addr *dst, struct in6_addr *src,
+		uint8_t protocol, uint16_t len)
+{
+	hdr->version = IPV6VERSION;
+
+	hdr->payload_len = be16(len);
+	hdr->nexthdr = protocol;
+	hdr->hop_limit = IPV6_HOPLIMIT;
+
+	memcpy(&hdr->daddr, dst, sizeof(struct in6_addr));
+	memcpy(&hdr->saddr, src, sizeof(struct in6_addr));
+}
+
 uint8_t get_ipproto(struct iphdr * hdr, uint8_t * ip)
 {
 	if (hdr->version != IPVERSION)
@@ -213,8 +251,22 @@ void build_udp(struct udphdr * hdr, uint16_t dst, uint16_t src, uint16_t len)
 	hdr->dest = be16(dst);
 	hdr->len = be16(UDP_HLEN + len);
 	hdr->check = 0;
-	/* hdr->check = be16(checksum((uint8_t *)hdr,
-	   UDP_HLEN + len, IPPROTO_UDP)); */
+}
+
+void build_udp_checksum_v6(struct ipv6hdr *ip6, struct udphdr *udp, uint16_t len)
+{
+	uint16_t zero;
+
+	checksum_init(0);
+	checksum_step((uint8_t *)&ip6->saddr, sizeof(ip6->saddr));
+	checksum_step((uint8_t *)&ip6->daddr, sizeof(ip6->daddr));
+	zero = be16(UDP_HLEN + len);
+	checksum_step((uint8_t *)&zero, sizeof(zero));
+	zero = be16(IPPROTO_UDP);
+	checksum_step((uint8_t *)&zero, sizeof(zero));
+	checksum_step((uint8_t *)udp, UDP_HLEN + len);
+
+	udp->check = be16(checksum_end());
 }
 
 void swap_udp(struct udphdr * hdr)

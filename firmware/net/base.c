@@ -158,7 +158,7 @@ static void process_periodic_udp(uint8_t * buf)
 		buf[DATA_OFF + size] = ',';
 		size += 4;
 
-		build_ethernet(eth, NULL, my_mac);
+		build_ethernet(eth, NULL, my_mac, ETH_P_IP);
 		build_ip(ip, NULL, my_ip, IPPROTO_UDP, UDP_HLEN + size);
 		build_udp(udp, 9999, 9999, size);
 
@@ -182,7 +182,7 @@ static void process_periodic_udp(uint8_t * buf)
 		fifo_pop(&rf_rx_fifo);
 		size += sizeof(struct osc_nrf_frame);
 
-		build_ethernet(eth, remote_mac, my_mac);
+		build_ethernet(eth, remote_mac, my_mac, ETH_P_IP);
 		build_ip(ip, remote_ip, my_ip, IPPROTO_UDP, UDP_HLEN + size);
 		build_udp(udp, 9999, 9999, size);
 
@@ -222,7 +222,7 @@ static void process_mcast(uint8_t * buf)
 	fifo_pop(&rf_rx_fifo);
 	size += sizeof(struct osc_nrf_frame);
 
-	build_ethernet(eth, remote_mcast_mac, my_mac);
+	build_ethernet(eth, remote_mcast_mac, my_mac, ETH_P_IP);
 	build_ip(ip, remote_mcast_ip, my_ip, IPPROTO_UDP, UDP_HLEN + size);
 	build_udp(udp, 9999, 9999, size);
 

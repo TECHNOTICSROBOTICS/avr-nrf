@@ -18,6 +18,7 @@
  *      These are the defined Ethernet Protocol ID's.
  */
 #define ETH_P_IP        0x0800          /* Internet Protocol packet     */
+#define ETH_P_IPV6      0x86DD          /* IPv6 over bluebook           */
 #define ETH_P_ARP       0x0806          /* Address Resolution packet    */
 #define ETH_P_8021Q     0x8100          /* 802.1Q VLAN Extended Header  */
 #define ETH_P_PPP_DISC  0x8863          /* PPPoE discovery messages     */
@@ -89,6 +90,37 @@ struct iphdr {
 #define IPPROTO_TCP  6
 #define IPPROTO_UDP  17
 
+
+/*************** IPv6 ***************/
+
+struct in6_addr {
+	union {
+		uint8_t         u6_addr8[16];
+		uint16_t        u6_addr16[8];
+		uint32_t        u6_addr32[4];
+	} in6_u;
+#define s6_addr                 in6_u.u6_addr8
+#define s6_addr16               in6_u.u6_addr16
+#define s6_addr32               in6_u.u6_addr32
+};
+
+#define IPV6VERSION     6
+#define IPV6_HOPLIMIT   64
+#define IPV6_HLEN       40
+
+struct ipv6hdr {
+	uint8_t                 priority:4,
+				version:4;
+	uint8_t                 flow_lbl[3];
+
+	uint16_t                payload_len;
+	uint8_t                 nexthdr;
+	uint8_t                 hop_limit;
+
+	struct  in6_addr        saddr;
+	struct  in6_addr        daddr;
+};
+
 /*************** ICMP ***************/
 
 #define ICMP_ECHOREPLY          0       /* Echo Reply                   */
@@ -139,7 +171,7 @@ uint16_t checksum(uint8_t *buf, uint16_t len, uint8_t type);
 uint16_t be16(uint16_t x);
 uint32_t be32(uint32_t x);
 
-void build_ethernet(struct ethhdr * hdr, uint8_t * dst, uint8_t * src);
+void build_ethernet(struct ethhdr * hdr, uint8_t * dst, uint8_t * src, uint16_t h_proto);
 void swap_ethernet(struct ethhdr * hdr);
 uint8_t ethernet_checkdest(struct ethhdr * hdr, uint8_t * mac);
 uint16_t get_ethertype(struct ethhdr * hdr);
@@ -147,10 +179,13 @@ uint16_t get_ethertype(struct ethhdr * hdr);
 void process_arp(uint8_t * buf, uint8_t * mac, uint8_t * ip);
 
 void build_ip(struct iphdr * hdr, uint8_t * dst, uint8_t * src, uint8_t protocol, uint16_t len);
+void build_ipv6(struct ipv6hdr *hdr, struct in6_addr *dst, struct in6_addr *src,
+		uint8_t protocol, uint16_t len);
 uint8_t get_ipproto(struct iphdr * hdr, uint8_t * ip);
 
 void process_icmp(uint8_t * buf);
 void swap_ip(struct iphdr * hdr);
 
 void build_udp(struct udphdr * hdr, uint16_t dst, uint16_t src, uint16_t len);
+void build_udp_checksum_v6(struct ipv6hdr *ip6, struct udphdr *udp, uint16_t len);
 void swap_udp(struct udphdr * hdr);
