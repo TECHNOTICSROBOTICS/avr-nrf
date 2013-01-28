@@ -19,6 +19,12 @@
 #define MSG_INIT	"/nrf/init"
 #define MSG_BOUND	"/nrf/bound"
 
+static enum {
+	MODE_UNICAST = 0,
+	MODE_MCAST = 1,
+	MODE_MCAST6 = 2,
+} net_mode = MODE_UNICAST;
+
 static uint8_t EEMEM my_mac_ee[6] = {0x00, 0x21, 0xf3, 0x00, 0x32, 0x02};
 static uint8_t EEMEM my_ip_ee[4] = {172, 16, 0, 33};
 
@@ -278,9 +284,8 @@ static void process_mcast6(uint8_t *buf)
 	ksz8851_send_packet(buf, DATAV6_OFF + size);
 }
 
-void net_poll(void)
+static void process_unicast(uint8_t *buf)
 {
-#ifndef MULTICAST
 	uint16_t len;
 
 	if (ksz8851_has_data()) {
@@ -304,9 +309,21 @@ void net_poll(void)
 		}
 
 	}
+}
 
-	process_periodic_udp(buf);
-#else
-	process_mcast(buf);
-#endif
+
+void net_poll(void)
+{
+	switch (net_mode) {
+		case MODE_UNICAST:
+			process_unicast(buf);
+			process_periodic_udp(buf);
+			break;
+		case MODE_MCAST:
+			process_mcast(buf);
+			break;
+		case MODE_MCAST6:
+			process_mcast6(buf);
+			break;
+	}
 }
