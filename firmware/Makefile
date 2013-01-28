@@ -31,7 +31,6 @@ DFU_UTIL = dfu-util
 DFU_UTIL_FLAGS =
 
 CFLAGS  = -Inet -Iusb -Wall -mmcu=$(MCU) -DF_CPU=$(F_CPU) -DXTAL=$(XTAL)
-CFLAGS += -ffunction-sections -Wl,--relax -Wl,--gc-sections #-Wl,--print-gc-sections
 ASFLAGS =
 LDFLAGS =
 
