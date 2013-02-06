@@ -22,6 +22,10 @@
 #define USB_PRODUCT "avr-nrf"
 #define USB_EP_IN 2
 
+/* #define RRDEBUG */
+#define DBNAME "power.rrd"
+static FILE *output;
+
 static enum {
 	MODE_FILE = 0,
 	MODE_USB,
@@ -95,6 +99,9 @@ static void dump_power(struct nrf_frame *pkt)
 
 	if (pwr->vbatt & NRF_POWER_VBATT_CHARGING)
 		putchar('+');
+
+	fprintf(output, "update %s N:%d\n", DBNAME, pwr->value[0]);
+	fflush(output);
 }
 
 static void dump_generic(struct nrf_frame *pkt)
@@ -187,6 +194,8 @@ int main(int argc, char **argv)
 	int ret;
 	usb_dev_handle *handle = NULL;
 
+	output = stdout;
+
 	usb_init();
 
 	if (argc != 2) {
@@ -227,6 +236,22 @@ int main(int argc, char **argv)
 		config_port(fd);
 
 		mode = MODE_FILE;
+	}
+
+#ifndef RRDEBUG
+	printf("About to daemonize...\n");
+	fflush(stdout);
+	daemon(1, 0);
+#endif
+
+#ifdef RRDEBUG
+	output = popen("exec rrdtool -", "w");
+#else
+	output = popen("exec rrdtool - > /dev/null 2>&1", "w");
+#endif
+	if (!output) {
+		perror("popen");
+		exit(1);
 	}
 
 	printf("Start, pkt size = %ld bytes\n", sizeof(pkt));
