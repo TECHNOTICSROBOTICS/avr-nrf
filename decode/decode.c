@@ -100,8 +100,10 @@ static void dump_power(struct nrf_frame *pkt)
 	if (pwr->vbatt & NRF_POWER_VBATT_CHARGING)
 		putchar('+');
 
-	fprintf(output, "update %s N:%d\n", DBNAME, pwr->value[0]);
-	fflush(output);
+	if (pkt->board_id == 0x20) {
+		fprintf(output, "update %s N:%d\n", DBNAME, pwr->value[0]);
+		fflush(output);
+	}
 }
 
 static void dump_generic(struct nrf_frame *pkt)
