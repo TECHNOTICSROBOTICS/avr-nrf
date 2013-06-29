@@ -11,13 +11,15 @@ struct nrf_power {
 	uint8_t _spare[2];
 };
 
+union nrf_msg {
+	uint8_t generic[12];
+	struct nrf_power power;
+};
+
 struct nrf_frame {
 	uint8_t board_id;
 	uint8_t msg_id;
 	uint8_t len;
 	uint8_t seq;
-	union {
-		uint8_t generic[12];
-		struct nrf_power power;
-	} msg;
+	union nrf_msg msg;
 };
