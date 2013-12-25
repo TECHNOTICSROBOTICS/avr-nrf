@@ -97,6 +97,50 @@ static void dump_power(struct nrf_frame *pkt)
 		putchar('+');
 }
 
+static void dump_boot(struct nrf_frame *pkt)
+{
+	int i;
+	int cksum;
+	struct nrf_boot *bmsg = &pkt->msg.boot;
+
+	printf("boot: ");
+
+	switch (bmsg->cmd & NRF_BOOT_CMD_MASK) {
+		case NRF_BOOT_CMD_ACK:
+			printf("ack (%02x)", pkt->seq);
+			break;
+		case NRF_BOOT_CMD_BOOT:
+			printf("bootme");
+			break;
+		case NRF_BOOT_CMD_START:
+			printf("start");
+			break;
+		case NRF_BOOT_CMD_WRITE(0):
+			printf("write(%2d): %x,",
+					NRF_BOOT_SIZE(bmsg->cmd),
+					bmsg->cksum);
+			cksum = 0;
+			for (i = 0; i < 10; i++) {
+				printf(" %02hhx", bmsg->payload[i]);
+				cksum += bmsg->payload[i];
+			}
+
+			cksum &= 0xff;
+
+			if (bmsg->cksum == cksum)
+				printf(" (cksum ok)");
+			else
+				printf(" (cksum wrong)");
+
+			break;
+		case NRF_BOOT_CMD_FINALIZE:
+			printf("finalize");
+			break;
+		default:
+			printf("unknown");
+	}
+}
+
 static void dump_generic(struct nrf_frame *pkt)
 {
 	char *bytes;
@@ -170,6 +214,9 @@ static void decode(struct nrf_frame *pkt)
 	switch (pkt->msg_id) {
 	case NRF_MSG_ID_POWER:
 		dump_power(pkt);
+		break;
+	case NRF_MSG_ID_BOOT:
+		dump_boot(pkt);
 		break;
 	case NRF_MSG_ID_GENERIC:
 	default:
